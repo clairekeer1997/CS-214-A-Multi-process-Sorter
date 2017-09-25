@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "Sorter.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -116,3 +117,10 @@ int main(int argc, char** argv){
     }
     return 0;
 }
+=======
+#include <Sorter.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+>>>>>>> d15189721d39c5fca608ec6d79a261179123e2e0
