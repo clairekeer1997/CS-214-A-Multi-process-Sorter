@@ -1,12 +1,11 @@
-/*****
-*
-*	Define structures and function prototypes for your sorter
-*
-*
-*
-******/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
-//Suggestion: define a struct that mirrors a record (row) of the data set
+typedef struct{
+    char** record;
+}row;
 
 
-//Suggestion: prototype a mergesort function
+
