@@ -1,4 +1,4 @@
-#define BUF_SIZE 1024
+#define BUF_SIZE 1025
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,53 +9,50 @@ typedef struct{
 	char **row;	
 }row;
 
-char *self_strcat(char *str1, char *str2)
-{
-
-    int len1=strlen(str1),len2=strlen(str2);
-    for(int i=strlen(str1);i<len1+len2;i++){
-        str1[i]=str2[i-len1];
-    }
-    str1 [len1+len2]= '\0';
-    return str1;
-}
-
-int main(int argc, char* argv[]) {
-
-	FILE * fp;
+int main (int argc, char* argv[]){
+	FILE *fp;
 	fp = stdin;
-	char * buffer;
-	buffer = (char*) malloc(sizeof(char) * BUF_SIZE);
-	*buffer = '\0';
-	char* tmp_buffer;
-	tmp_buffer = (char*) malloc(sizeof(char) * BUF_SIZE);
-	*tmp_buffer = '\0';
-	size_t count = 0;
+	char *first_line;
+	first_line = (char*) malloc (sizeof(char) * BUF_SIZE);
+	char *rest_line;
+	rest_line = (char*) malloc (sizeof(char) * BUF_SIZE);
+	char *token;
+	char ** first_line_token;
+	char ** rest_line_token;
+	size_t line_size;
+	size_t num_col = 1;
 
-
-	if(fp == NULL){
-		printf("invalid input file");
-		exit(1);
+	fgets(first_line, BUF_SIZE-1, fp);
+	line_size = strlen(first_line);
+	first_line_token = (char**) malloc(sizeof(char *) * line_size);
+	token = strtok(first_line, ",");
+	first_line_token[0] = token;
+	
+	while(token = strtok(NULL, ",")){
+		//printf("%d token is: %s\n",num_col, token);
+		first_line_token[num_col++] = token;
+		//printf("inside %d token is: %s\n",num_col, first_line_token[num_col - 1]);
 	}
+
+	free(first_line);
+
+	//fgets(rest_line, BUF_SIZE-1, fp);
+	while(fgets(rest_line, BUF_SIZE-1, fp) != NULL){
+		num_col = 1;
+		line_size = strlen(rest_line);
+		rest_line_token = (char**) malloc(sizeof(char *) * line_size);
+		token = strtok(rest_line, ",");
+		rest_line_token[0] = token;
+		printf("%d token is: %s\n",num_col, token);
 		
-	int i = 0;
-
-	/*load the whole file into char* buffer*/
-	while(!feof(fp)){
-		//fread(tmp_buffer, BUF_SIZE-1, 1, fp);
-		if(fread(tmp_buffer, BUF_SIZE-1, 1, fp)	== 0){
-			printf("no buffer");
-			exit(1);
+		while(token = strtok(NULL, ",")){
+			printf("%d token is: %s\n",num_col, token);
+			rest_line_token[num_col++] = token;
+			printf("inside %d token is: %s\n",num_col, rest_line_token[num_col - 1]);
 		}
-		printf("%s", tmp_buffer);
-		self_strcat(buffer, tmp_buffer);
-		//printf("%s", buffer);
-		printf("debug");
-		realloc(buffer, sizeof(buffer) + BUF_SIZE);
 	}
 
-	printf("%s", buffer);
-	free(buffer);
-	fclose(fp);
-	return 0;
+	//printf("%d", first_line_size);
+	printf("%s", rest_line_token[0]);
 }
+
