@@ -5,7 +5,7 @@
 #include <ctype.h>
 
 
-typedef struct{
+Stypedef struct{
     char** row_token;
     char * row_text;
     size_t row_size;
@@ -50,8 +50,7 @@ char** tokenizer(char* line){
     return result;
 }
 
-int main(int argc, char* argv[]) {
-
+int main (int argc, char* argv[]){
 	/*start to declare variable*/
 	FILE *fp;
 	fp = stdin;
@@ -66,7 +65,7 @@ int main(int argc, char* argv[]) {
 	size_t num_col = 1;
 	/*end of declaring variable*/
 
-/*deal with the first row which contains all titles.*/
+	/*deal with the first row which contains all titles.*/
 
 		/*split the first token*/
 	fgets(first_row.row_text, BUF_SIZE-1, fp);
@@ -105,8 +104,10 @@ int main(int argc, char* argv[]) {
 			//printf("inside %d token is: %s\n",num_col, rest_row.row_token[num_col - 1]);//debug
 		}
 	}
-	
-    return 0;
 
+	return 0；
+	//printf("%d", first_line_size);
+	//printf("%s", rest_row.row_token[0]);
 }
+
 
