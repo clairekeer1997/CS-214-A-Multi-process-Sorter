@@ -33,7 +33,7 @@ char** tokenizer(char* line){
     char* temp = (char*)malloc(500);//store each word;
     
     //go through each character;
-    while(line[i] != 0){
+    while(i < strlen(line)){
     
         //split by ',' or reach the end of line;
         if(line[i] == ',' || i == strlen(line) - 1){
