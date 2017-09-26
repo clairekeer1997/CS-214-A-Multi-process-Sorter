@@ -9,7 +9,7 @@ typedef struct{
 	char **row;	
 }row;
 
-char *self_strcat(char *str1, char *str2)
+/*char *self_strcat(char *str1, char *str2)
 {
 
     int len1=strlen(str1),len2=strlen(str2);
@@ -18,7 +18,7 @@ char *self_strcat(char *str1, char *str2)
     }
     str1 [len1+len2]= '\0';
     return str1;
-}
+}*/
 
 int main(int argc, char* argv[]) {
 
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
 			exit(1);
 		}
 		printf("%s", tmp_buffer);
-		self_strcat(buffer, tmp_buffer);
+		strcat(buffer, tmp_buffer);
 		//printf("%s", buffer);
 		printf("debug");
 		realloc(buffer, sizeof(buffer) + BUF_SIZE);
