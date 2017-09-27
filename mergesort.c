@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include "Sorter.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +36,7 @@ int compare(char* c1, char* c2){
 left is the size of L, right is the size of right; 
 col is the column number we need to get; 
 */
-void merge(struct row* L, struct row* R, struct row* res, int left, int right, int col){  
+void merge(row* L, row* R, row* res, int left, int right, int col){  
 
     int index = 0;
     int i = 0;
@@ -45,7 +44,7 @@ void merge(struct row* L, struct row* R, struct row* res, int left, int right, i
 
     //compare L and R;
     while(i < left && j < right){
-        if(compare(L -> record[col], R -> record[col]) == 0){
+        if(compare(L -> row_token[col], R -> row_token[col]) == 0){
             res[index] = L[i];
             index++;
             i++;
@@ -69,7 +68,7 @@ void merge(struct row* L, struct row* R, struct row* res, int left, int right, i
     }
 
 }
-void mergeSort(struct row* target, int col, int n){
+void mergeSort(row* target, int col, int n){
 
     int i, mid;
 
@@ -81,8 +80,8 @@ void mergeSort(struct row* target, int col, int n){
     mid = n/2;
 
     //create the left part and right part of the row;
-    struct row* L = (struct row*)malloc(mid * sizeof(struct row));   
-    struct row* R = (struct row*)malloc((n-mid) * sizeof(struct row));
+    row* L = (row*)malloc(mid * sizeof(row));   
+    row* R = (row*)malloc((n-mid) * sizeof(row));
 
     //copy value to left and right row;
     for(i = 0; i < mid; i++){
@@ -105,22 +104,60 @@ void mergeSort(struct row* target, int col, int n){
 
 
 int main(int argc, char** argv){
- 
-    int a[3] = {3, 2, 1};
-    int n = sizeof(a) / sizeof(a[0]);
-    //int* res = (int*)malloc(n * sizeof(int));
-    mergeSort(a,n);
+    row* target = (row*)malloc(5*sizeof(row));
+
+    char** c1 = (char**)malloc(5*sizeof(char*));
+    row r1;
+    r1.row_token = (char**)malloc(5*sizeof(char*));
     int i = 0;
-    while(i < n){
-        printf("%d \n", a[i]);
+    while(i < 4){
+        c1[i] = (char*)malloc(100);
         i++;
     }
+
+    c1[0] = "a";
+    c1[1] = "cd";
+    c1[2] = "[[";
+    c1[3] = "00";
+    r1.row_token = c1;
+
+    char** c2 = (char**)malloc(5*sizeof(char*));
+    row r2;
+    r2.row_token = (char**)malloc(5*sizeof(char*));
+
+    i = 0;
+     while(i < 4){
+        c2[i] = (char*)malloc(100);
+        i++;
+    }
+    c2[0] = "d";
+    c2[1] = "td";
+    c2[2] = "--[";
+    c2[3] = "34";
+    r2.row_token = c2;
+    //int* res = (int*)malloc(n * sizeof(int));
+
+    char** c3 = (char**)malloc(5*sizeof(char*));
+    row r3;
+    r3.row_token = (char**)malloc(5*sizeof(char*));
+
+    i = 0;
+    while(i < 4){
+        c3[i] = (char*)malloc(100);
+        i++;
+    }
+    c3[0] = "c";
+    c3[1] = "432";
+    c3[2] = "99[";
+    c3[3] = "";
+    r3.row_token = c3;
+
+    target[0] = r1;
+    target[1] = r2;
+    target[2] = r3;
+
+    mergeSort(target,2,3);
+   
+    printf("%s \n", target[0].row_token[0]);
     return 0;
 }
-=======
-#include <Sorter.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
->>>>>>> d15189721d39c5fca608ec6d79a261179123e2e0

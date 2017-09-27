@@ -14,7 +14,16 @@
     size_t row_size;
     size_t num_col;
 }row;*/
-
+char* trim(char* word, int index){
+	while(index >= 0){
+		if(word[index]){
+			break;
+		}
+		index--;
+	}
+	word[index+1] = '\0';
+	return word;
+}
 
 char** tokenizer(char* line, size_t num_col){
     
@@ -34,12 +43,14 @@ char** tokenizer(char* line, size_t num_col){
 		if(line[i] == '"' && start_quote == FALSE){
 			start_quote = TRUE;
 		}
-
+		
+		
 		else if(line[i] == '"' && start_quote == TRUE){
 			//store value in result
 			result[k] = (char*) malloc((j + 1) * sizeof(char));
+			temp = trim(temp, j);
 			strcpy(result[k], temp);
-			memset(&temp[0], 0, sizeof(temp));
+			memset(&temp[0], 0, strlen(temp));
 			j = 0;
 			k++;
 			i++;
@@ -54,20 +65,36 @@ char** tokenizer(char* line, size_t num_col){
 			}
 			
             //store value to result;
-            result[k] = (char*)malloc((j+1) * sizeof(char));
+			result[k] = (char*)malloc((j+1) * sizeof(char));
+			temp = trim(temp, j);			
             strcpy(result[k], temp);
-            memset(&temp[0], 0, sizeof(temp));
             j = 0;
-            k++;
+            k++;//printf("here4\n");
         }else{
-            //copy character from line to temp;
+			//copy character from line to temp;
+			if(j == 0){
+				memset(&temp[0], 0, strlen(temp));
+				if(line[i] == ' '){
+					i++;
+					continue;
+				}				
+			}
+			
             temp[j] = line[i];
-            j++;
+			j++;
 		}
-		
         i++;
-    }
-    free(temp);
+	}
+	//printf("here6\n");
+	i = 0;
+	//printf("%zu\n", num_col);
+	while(i < num_col){
+		
+		printf("%s ", result[i]);
+		i++;
+	}
+	printf("\n");
+	free(temp);
     return result;
 }
 
@@ -81,7 +108,7 @@ int main (int argc, char* argv[]){
 	row rest_row;
 	rest_row.row_text = (char*) malloc (sizeof(char) * BUF_SIZE);
 	row *data;
-	data = (row*) malloc (sizeof(row) * 100000);
+	data = (row*) malloc (sizeof(row) * 10000);
 	char *token;
 	size_t num_col = 1;
 	size_t curr_col = 0;
@@ -90,29 +117,49 @@ int main (int argc, char* argv[]){
 
 	/*deal with all titles.*/
 
-		/*split the 1st token by ','*/
+	/*split the 1st token by ','*/
 	fgets(first_row.row_text, BUF_SIZE-1, fp);
 
 	first_row.row_len = strlen(first_row.row_text);
 	first_row.row_token = (char**) malloc(sizeof(char *) * first_row.row_len);
 
-	/*token = strtok(first_row.row_text, ",");
-	first_row.row_token[0] = token;*/
+	token = strtok(first_row.row_text, ",");
+	first_row.row_token[0] = token;
 	
-	/*split the rest of token in the first row*/
-	/*while(token = strtok(NULL, ",")){
-
-		first_row.row_token[num_col++] = token;
-	
-	}*/
-	first_row.row_token = tokenizer(first_row.row_text, num_col);
-
+	//split the rest of token in the first row
+	while(token = strtok(NULL, ",")){
+		first_row.row_token[num_col++] = token;	
+	}
 	data[curr_row++] = first_row;//stroe first row into the final data
 
 	/*deal with data*/
+	int i;
 	while(fgets(rest_row.row_text, BUF_SIZE-1, fp) != NULL){
+		rest_row.row_len = strlen(rest_row.row_text);
+		rest_row.row_token = (char**) malloc(sizeof(char *) * (num_col+1));
+		rest_row.row_token = tokenizer(rest_row.row_text, num_col);
+		//printf("%s \n", rest_row.row_text);
 		
-		/*split the first token by ","*/
+		i = 0;
+		/*while(i < num_col){
+			printf("%s ", rest_row.row_token[i]);
+			i++;
+		}*/
+		data[curr_row++] = rest_row;
+		//printf("row: %d  \n", curr_row);
+		
+	}
+
+
+
+	return 0;
+}
+
+
+
+	/*while(fgets(rest_row.row_text, BUF_SIZE-1, fp) != NULL){
+		
+		//split the first token by ","
 
 		curr_col = 1;//reset num of col to make sure element store in the right position
 
@@ -121,7 +168,7 @@ int main (int argc, char* argv[]){
 		token = strtok(rest_row.row_text, ",");
 		rest_row.row_token[0] = token;
 		
-		/*split the rest of token*/
+		/*split the rest of token
 		while(token = strtok(NULL, ",")){
 
 			rest_row.row_token[curr_col++] = token;
@@ -130,9 +177,5 @@ int main (int argc, char* argv[]){
 
 		data[curr_row++] = rest_row;
 		printf("%s", data[curr_row - 1].row_token[1]);
-	}
-
-	return 0;
-}
-
-
+		
+	}*/
