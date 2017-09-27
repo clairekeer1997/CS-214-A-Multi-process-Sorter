@@ -15,10 +15,14 @@
     size_t num_col;
 }row;*/
 char* trim(char* word, int index){
-	while(index >= 0){
-		if(word[index]){
+	while(index >= 0){	
+		if(word[index] != ' '){
+			//printf("word is %c\n", word[index]);
+			//printf("break at %c\n", word[index]);
 			break;
 		}
+		//printf("word is %s\n", word);
+				
 		index--;
 	}
 	word[index+1] = '\0';
@@ -43,70 +47,70 @@ char** tokenizer(char* line, size_t num_col){
 		if(line[i] == '"' && start_quote == FALSE){
 			start_quote = TRUE;
 		}
-		
-		
+				
 		else if(line[i] == '"' && start_quote == TRUE){
 			//store value in result
 			result[k] = (char*) malloc((j + 1) * sizeof(char));
-			temp = trim(temp, j);
+			temp = trim(temp, j - 1);
 			strcpy(result[k], temp);
 			memset(&temp[0], 0, strlen(temp));
+			start_quote = FALSE;
 			j = 0;
 			k++;
 			i++;
 		}
 
-        //split by ',' or reach the end of line;
-        else if((line[i] == ',' || i == strlen(line) - 1 ) && start_quote != TRUE){
-    
+		//split by ',' or reach the end of line;
+        else if((line[i] == ',' || i == strlen(line) - 2) && start_quote != TRUE){
             //if there is no character; (eg: ,,)
             if(!temp){
                 temp[0] = '\0';
 			}
-			
             //store value to result;
 			result[k] = (char*)malloc((j+1) * sizeof(char));
-			temp = trim(temp, j);			
-            strcpy(result[k], temp);
+			temp = trim(temp, j - 1);			
+			strcpy(result[k], temp);
+			memset(&temp[0], 0, strlen(temp));			
             j = 0;
-            k++;
+			k++;
+			//if the last character is ',';
+			if(line[i] == ',' && i == strlen(line) - 2){
+				temp[0] = '\0';
+				result[k] = (char*)malloc((j+1) * sizeof(char));
+				strcpy(result[k], temp);
+				memset(&temp[0], 0, strlen(temp));								
+			}
+
         }else{
 			//copy character from line to temp;
 			if(j == 0){
-				memset(&temp[0], 0, strlen(temp));
 				if(line[i] == ' '){
 					i++;
 					continue;
 				}				
 			}
-			
             temp[j] = line[i];
 			j++;
 		}
         i++;
 	}
-	i = 0;
+	/*i = 0;
+	//printf("the num of col is %d", num_col);
 	while(i < num_col){
 		
-		printf("%s ", result[i]);
+		printf("the %dth token is:--%s--\n", i, result[i]);
 		i++;
-	}
+	}*/
 	printf("\n");
 	free(temp);
     return result;
 }
 
-int main (int argc, char* argv[]){
-	/*declare variable*/
-	FILE *fp;
-	fp = stdin;
-
+void tok_file(FILE *fp, row* data){
 	row first_row;
 	first_row.row_text = (char*) malloc (sizeof(char) * BUF_SIZE);
 	row rest_row;
 	rest_row.row_text = (char*) malloc (sizeof(char) * BUF_SIZE);
-	row *data;
-	data = (row*) malloc (sizeof(row) * 10000);
 	char *token;
 	size_t num_col = 1;
 	size_t curr_col = 0;
@@ -131,36 +135,68 @@ int main (int argc, char* argv[]){
 	data[curr_row++] = first_row;//stroe first row into the final data
 
 	/*deal with data*/
+	int i = 0;
 	while(fgets(rest_row.row_text, BUF_SIZE-1, fp) != NULL){
 		rest_row.row_len = strlen(rest_row.row_text);
 		rest_row.row_token = (char**) malloc(sizeof(char *) * (num_col+1));
 		rest_row.row_token = tokenizer(rest_row.row_text, num_col);
+		i = 0;
+		while(i<num_col){
+			printf("the %dth word is--%s--\n", i, rest_row.row_token[i]);
+			i++;
+		}
 		data[curr_row++] = rest_row;		
 	}
-	return 0;
 }
 
+int main (int argc, char* argv[]){
+	/*declare variable*/
+	FILE *fp;
+	fp = stdin;
+	row *data;
+	data = (row*) malloc (sizeof(row) * 10000);
+	tok_file(fp, data);
+	/*row first_row;
+	first_row.row_text = (char*) malloc (sizeof(char) * BUF_SIZE);
+	row rest_row;
+	rest_row.row_text = (char*) malloc (sizeof(char) * BUF_SIZE);
+	row *data;
+	data = (row*) malloc (sizeof(row) * 10000);
+	char *token;
+	size_t num_col = 1;
+	size_t curr_col = 0;
+	size_t curr_row = 0; //current row number in row* data
+	end of declaring variable*/
 
+	/*deal with all titles.*/
 
-	/*while(fgets(rest_row.row_text, BUF_SIZE-1, fp) != NULL){
-		
-		//split the first token by ","
+	/*split the 1st token by ','*/
+	/*fgets(first_row.row_text, BUF_SIZE-1, fp);
 
-		curr_col = 1;//reset num of col to make sure element store in the right position
+	first_row.row_len = strlen(first_row.row_text);
+	first_row.row_token = (char**) malloc(sizeof(char *) * first_row.row_len);
 
-		rest_row.row_token = (char**) malloc(sizeof(char *) * num_col);
+	token = strtok(first_row.row_text, ",");
+	first_row.row_token[0] = token;
+	
+	//split the rest of token in the first row
+	while(token = strtok(NULL, ",")){
+		first_row.row_token[num_col++] = token;	
+	}
+	data[curr_row++] = first_row;//stroe first row into the final data
 
-		token = strtok(rest_row.row_text, ",");
-		rest_row.row_token[0] = token;
-		
-		/*split the rest of token
-		while(token = strtok(NULL, ",")){
-
-			rest_row.row_token[curr_col++] = token;
-
+	deal with data*/
+	/*int i = 0;
+	while(fgets(rest_row.row_text, BUF_SIZE-1, fp) != NULL){
+		rest_row.row_len = strlen(rest_row.row_text);
+		rest_row.row_token = (char**) malloc(sizeof(char *) * (num_col+1));
+		rest_row.row_token = tokenizer(rest_row.row_text, num_col);
+		i = 0;
+		while(i<num_col){
+			printf("the %dth word is--%s--\n", i, rest_row.row_token[i]);
+			i++;
 		}
-
-		data[curr_row++] = rest_row;
-		printf("%s", data[curr_row - 1].row_token[1]);
-		
+		data[curr_row++] = rest_row;		
 	}*/
+	return 0;
+}
