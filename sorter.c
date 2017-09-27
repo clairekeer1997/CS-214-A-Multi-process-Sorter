@@ -8,12 +8,7 @@
 #include <ctype.h>
 
 
-/*typedef struct{
-    char** row_token;
-    char * row_text;
-    size_t row_size;
-    size_t num_col;
-}row;*/
+
 char* trim(char* word, int index){
 	while(index >= 0){
 		if(word[index]){
