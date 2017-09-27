@@ -69,7 +69,7 @@ char** tokenizer(char* line, size_t num_col){
 			temp = trim(temp, j);			
             strcpy(result[k], temp);
             j = 0;
-            k++;//printf("here4\n");
+            k++;
         }else{
 			//copy character from line to temp;
 			if(j == 0){
@@ -85,9 +85,7 @@ char** tokenizer(char* line, size_t num_col){
 		}
         i++;
 	}
-	//printf("here6\n");
 	i = 0;
-	//printf("%zu\n", num_col);
 	while(i < num_col){
 		
 		printf("%s ", result[i]);
@@ -133,25 +131,12 @@ int main (int argc, char* argv[]){
 	data[curr_row++] = first_row;//stroe first row into the final data
 
 	/*deal with data*/
-	int i;
 	while(fgets(rest_row.row_text, BUF_SIZE-1, fp) != NULL){
 		rest_row.row_len = strlen(rest_row.row_text);
 		rest_row.row_token = (char**) malloc(sizeof(char *) * (num_col+1));
 		rest_row.row_token = tokenizer(rest_row.row_text, num_col);
-		//printf("%s \n", rest_row.row_text);
-		
-		i = 0;
-		/*while(i < num_col){
-			printf("%s ", rest_row.row_token[i]);
-			i++;
-		}*/
-		data[curr_row++] = rest_row;
-		//printf("row: %d  \n", curr_row);
-		
+		data[curr_row++] = rest_row;		
 	}
-
-
-
 	return 0;
 }
 
