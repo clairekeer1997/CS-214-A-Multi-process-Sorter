@@ -4,29 +4,90 @@
 #include <string.h>
 #include <ctype.h>
 
+//if it is a number string, return 1, choosing int mergesort
+//otherwise, choosing char mergesort
+int isNum(char* string){
+    int i = 0;
+    int isNeg = 0;//0 if num is positive, 1 if num is negative
+    int dec = 0; // 0 if num did not has a decimal, 1 otherwise i.e. 12.333.3
+    
+    if(string == NULL || string == ""){
+        return 0;
+    }
+    //if the string start with '+' or '-' i.e. -123;
+    if(string[0] == '+' || string[0] == '-'){
+        i = 1;
+    }
+    
+    while(i < strlen(string)){        
+        if( !isdigit(string[i])){
+            if(string[i] == '.' && !dec){ //i.e 1.3
+                
+                if(i == strlen(string) - 1 || !isdigit(string[i + 1])){
+                    
+                    return 0;
+                }
+    
+                dec = 1;
+                i++;
+                continue;
+            }
+    
+            return 0;
+        }   
+        i++;
+    }
+    return 1;
+}    
+
+int compare_num (char* c1, char* c2){
+    float num_c1 = atof(c1);
+    float num_c2 = atof(c2);
+    
+   // printf("first: %.3f, second: %.3f", num_c1, num_c2);
+    
+    if(num_c1 <= num_c2){
+        return 0;
+    }
+    else{
+        return 1;
+    }
+}
+
 //if c1 < c2, return 0; otherwise, return 1;
 int compare(char* c1, char* c2){
   int i = 0;
-  int c1size = sizeof(c1)/sizeof(char*);
-  int c2size = sizeof(c2)/sizeof(char*);
+  int c1size = strlen(c1);
+  int c2size = strlen(c2);
 
   //compare;
-  while(i < c1size && i < c2size){
-    if(c1[i] < c2[i]){
-      return 0;
-    }
-    if(c1[i] > c2[i]){
-      return 1;
-    }
-    i++;
-  }
-
-  //eg: c1 = app; c2 = apple; return 0; 
-  //when the two are same, also return 0;
-  if(i == c1size){
+  if(!c1){
     return 0;
-  }else{
-    return 1;
+  }
+  if(!c2 && c1){
+      return 1;
+  }
+  if(isNum(c1) == 1 && isNum(c2) == 1){
+      return compare_num(c1, c2);
+  }
+  else{
+    while(i < c1size && i < c2size){
+        if(c1[i] < c2[i]){
+          return 0;
+        }
+        if(c1[i] > c2[i]){
+          return 1;
+        }
+        i++;
+      }
+    
+      //eg: c1 = app; c2 = apple; return 0; 
+      //when the two are same, also return 0;
+      if(i == c1size){
+        return 0;
+      }else{
+        return 1;
+      }
   }
 }
 
@@ -44,7 +105,7 @@ void merge(row* L, row* R, row* res, int left, int right, int col){
 
     //compare L and R;
     while(i < left && j < right){
-        if(compare(L -> row_token[col], R -> row_token[col]) == 0){
+        if(compare(L[i].row_token[col], R[j].row_token[col]) == 0){
             res[index] = L[i];
             index++;
             i++;
@@ -65,6 +126,11 @@ void merge(row* L, row* R, row* res, int left, int right, int col){
         res[index] = R[j];
         j++;
         index++;
+    }
+    i = 0;
+    while(i < index){
+       // printf("merge: %dth is %s\n", i, res[i].row_token[22]);
+        i++;
     }
 
 }
@@ -103,61 +169,3 @@ void mergeSort(row* target, int col, int n){
 
 
 
-int main(int argc, char** argv){
-    row* target = (row*)malloc(5*sizeof(row));
-
-    char** c1 = (char**)malloc(5*sizeof(char*));
-    row r1;
-    r1.row_token = (char**)malloc(5*sizeof(char*));
-    int i = 0;
-    while(i < 4){
-        c1[i] = (char*)malloc(100);
-        i++;
-    }
-
-    c1[0] = "a";
-    c1[1] = "cd";
-    c1[2] = "[[";
-    c1[3] = "00";
-    r1.row_token = c1;
-
-    char** c2 = (char**)malloc(5*sizeof(char*));
-    row r2;
-    r2.row_token = (char**)malloc(5*sizeof(char*));
-
-    i = 0;
-     while(i < 4){
-        c2[i] = (char*)malloc(100);
-        i++;
-    }
-    c2[0] = "d";
-    c2[1] = "td";
-    c2[2] = "--[";
-    c2[3] = "34";
-    r2.row_token = c2;
-    //int* res = (int*)malloc(n * sizeof(int));
-
-    char** c3 = (char**)malloc(5*sizeof(char*));
-    row r3;
-    r3.row_token = (char**)malloc(5*sizeof(char*));
-
-    i = 0;
-    while(i < 4){
-        c3[i] = (char*)malloc(100);
-        i++;
-    }
-    c3[0] = "c";
-    c3[1] = "432";
-    c3[2] = "99[";
-    c3[3] = "";
-    r3.row_token = c3;
-
-    target[0] = r1;
-    target[1] = r2;
-    target[2] = r3;
-
-    mergeSort(target,2,3);
-   
-    printf("%s \n", target[0].row_token[0]);
-    return 0;
-}
