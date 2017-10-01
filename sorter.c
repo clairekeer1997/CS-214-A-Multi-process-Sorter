@@ -153,14 +153,25 @@ int main (int argc, char* argv[]){
 		first_row.row_token[num_col++] = token;	
 	}
 	first_row.num_col = num_col;
+
+	//printf("tok length is: %d", strlen(first_row.row_token[num_col - 1]));
 	
 	//delete the '\n' in the last word;
 	//printf("first:%d\n", strlen(first_row.row_token[27]));
 	
 	int length = strlen(first_row.row_token[num_col - 1]);
 	if(first_row.row_token[num_col - 1][length - 1] == '\n'){
-		first_row.row_token[num_col - 1][length - 2] = '\0';
+		first_row.row_token[num_col - 1][length - 1] = '\0';
 	}
+	//printf("tok is: --%s--, length is: %d", first_row.row_token[num_col - 1], strlen(first_row.row_token[num_col - 1]));
+
+	//debug
+	/*int q = 0;
+	while(q < num_col){
+		printf("__%s__\n", first_row.row_token[q]);
+		q++;
+	}*/
+
 	//printf("first:%d\n", strlen(first_row.row_token[27]));
 	
 	//printf("here:%s\n",first_row.row_token[num_col-1]);
@@ -200,7 +211,7 @@ int main (int argc, char* argv[]){
 	//printf("%d\n", target_col);
 	mergeSort(data, target_col, num_row);
 	
-	
+	/*
 	i = 0;
 	//print the first row:
 	while(i < num_col){
@@ -227,6 +238,13 @@ int main (int argc, char* argv[]){
 			j++;
 		}
 		i++;
+		j = 0;
+	}
+	*/
+	int k = 0;
+	while(k < num_row){
+		printf("the %dth row is %s ",k, data[k].row_token[27]);
+		k++;
 	}
 	return 0;
 }
