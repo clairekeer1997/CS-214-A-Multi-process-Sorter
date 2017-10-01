@@ -21,6 +21,7 @@ int isNum(char* string){
     
     while(i < strlen(string)){        
         if( !isdigit(string[i])){
+            //printf("here:%c", string[i]);
             if(string[i] == '.' && !dec){ //i.e 1.3
                 
                 if(i == strlen(string) - 1 || !isdigit(string[i + 1])){
@@ -32,7 +33,6 @@ int isNum(char* string){
                 i++;
                 continue;
             }
-    
             return 0;
         }   
         i++;
@@ -54,7 +54,7 @@ int compare_num (char* c1, char* c2){
     }
 }
 
-//if c1 < c2, return 0; otherwise, return 1;
+//if c1 < c2, return 0; if c1 = c2, return 0; otherwise, return 1;
 int compare(char* c1, char* c2){
   int i = 0;
   int c1size = strlen(c1);
@@ -71,23 +71,12 @@ int compare(char* c1, char* c2){
       return compare_num(c1, c2);
   }
   else{
-    while(i < c1size && i < c2size){
-        if(c1[i] < c2[i]){
-          return 0;
-        }
-        if(c1[i] > c2[i]){
-          return 1;
-        }
-        i++;
-      }
-    
-      //eg: c1 = app; c2 = apple; return 0; 
-      //when the two are same, also return 0;
-      if(i == c1size){
+    if(strcasecmp(c1,c2) <= 0){
         return 0;
-      }else{
+    }
+    else{
         return 1;
-      }
+    }
   }
 }
 

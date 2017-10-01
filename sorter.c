@@ -57,10 +57,14 @@ char** tokenizer(char* line, size_t num_col){
 		}
 
 		//split by ',' or reach the end of line;
-        else if((line[i] == ',' || i == strlen(line) - 2) && start_quote != TRUE){
+        else if((line[i] == ',' || i == strlen(line) - 1) && start_quote != TRUE){
             //if there is no character; (eg: ,,)
             if(!temp){
                 temp[0] = '\0';
+			}
+			if(i == strlen(line) - 1 && line[i] != '\n'){
+				temp[j] = line[i];
+				j++;
 			}
             //store value to result;
 			result[k] = (char*)malloc((j+1) * sizeof(char));
@@ -150,6 +154,17 @@ int main (int argc, char* argv[]){
 	}
 	first_row.num_col = num_col;
 	
+	//delete the '\n' in the last word;
+	//printf("first:%d\n", strlen(first_row.row_token[27]));
+	
+	int length = strlen(first_row.row_token[num_col - 1]);
+	if(first_row.row_token[num_col - 1][length - 1] == '\n'){
+		first_row.row_token[num_col - 1][length - 2] = '\0';
+	}
+	//printf("first:%d\n", strlen(first_row.row_token[27]));
+	
+	//printf("here:%s\n",first_row.row_token[num_col-1]);
+	
 	//trim blank space;
 	int i = 0;
 	while(i < num_col){
@@ -164,8 +179,8 @@ int main (int argc, char* argv[]){
 	num_row = tok_file(fp, data, num_col);
 	
 	char* target;
-	if(argv[1]){
-		target = argv[1];	
+	if(argv[2]){
+		target = argv[2];	
 	}else{
 		printf("Wrong Input");
 		exit(1);
@@ -173,6 +188,8 @@ int main (int argc, char* argv[]){
 	
 	//find the target column number;
 	int target_col = 0;
+	//printf("target:%d\n", strlen(target));
+	
 	while(target_col < first_row.num_col){
 		if(strcmp(first_row.row_token[target_col], target) == 0){
 			break;
@@ -180,14 +197,36 @@ int main (int argc, char* argv[]){
 		target_col++;
 	}
 
-	//mergesort;
-	
+	//printf("%d\n", target_col);
 	mergeSort(data, target_col, num_row);
+	
+	
 	i = 0;
-	printf("%d\n", num_row);
+	//print the first row:
+	while(i < num_col){
+		printf("%s",first_row.row_token[i]);
+		if(i != num_col - 1){
+			printf(",");
+		}else{
+			printf("\n");
+		}
+		i++;
+	}
+
+	//print the rest of rows;
+	i = 0;
+	int j = 0;
 	while(i < num_row){
-		printf("%s\n", data[i].row_token[22]);	
-		i++;	
+		while(j < num_col){
+			printf("%s",data[i].row_token[j]);
+			if(i != num_col - 1){
+				printf(",");
+			}else{
+				printf("\n");
+			}
+			j++;
+		}
+		i++;
 	}
 	return 0;
 }
