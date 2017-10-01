@@ -8,8 +8,22 @@
 #include <ctype.h>
 
 
-
-char* trim(char* word, int index){
+char *trim(char *word, int index)
+{
+  char *end;
+  while(isspace((unsigned char)*word)){
+	word++;
+  }
+  if(*word == 0)
+    return word;
+  end = word + index;
+  while(end > word && isspace((unsigned char)*end)) {
+	  end--;
+  }
+  *(end+1) = 0;
+  return word;
+}
+/*char* trim(char* word, int index){
 	//from rear to head;
 	while(word[index] == ' '){			
 		index--;
@@ -23,7 +37,7 @@ char* trim(char* word, int index){
 		word++;
 	}
 	return word;
-}
+}*/
 
 char** tokenizer(char* line, size_t num_col){
     
@@ -161,7 +175,7 @@ int main (int argc, char* argv[]){
 	
 	int length = strlen(first_row.row_token[num_col - 1]);
 	if(first_row.row_token[num_col - 1][length - 1] == '\n'){
-		first_row.row_token[num_col - 1][length - 1] = '\0';
+		first_row.row_token[num_col - 1][length - 2] = '\0';
 	}
 	//printf("tok is: --%s--, length is: %d", first_row.row_token[num_col - 1], strlen(first_row.row_token[num_col - 1]));
 
@@ -211,7 +225,7 @@ int main (int argc, char* argv[]){
 	//printf("%d\n", target_col);
 	mergeSort(data, target_col, num_row);
 	
-	/*
+	
 	i = 0;
 	//print the first row:
 	while(i < num_col){
@@ -230,7 +244,7 @@ int main (int argc, char* argv[]){
 	while(i < num_row){
 		while(j < num_col){
 			printf("%s",data[i].row_token[j]);
-			if(i != num_col - 1){
+			if(j != num_col - 1){
 				printf(",");
 			}else{
 				printf("\n");
@@ -240,11 +254,12 @@ int main (int argc, char* argv[]){
 		i++;
 		j = 0;
 	}
-	*/
+	/*
 	int k = 0;
+	
 	while(k < num_row){
-		printf("the %dth row is %s ",k, data[k].row_token[27]);
+		printf("the %dth row is %s \n",k, data[k].row_token[27]);
 		k++;
-	}
+	}*/
 	return 0;
 }

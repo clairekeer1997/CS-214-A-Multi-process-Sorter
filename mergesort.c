@@ -12,7 +12,7 @@ int isNum(char* string){
     int dec = 0; // 0 if num did not has a decimal, 1 otherwise i.e. 12.333.3
     
     if(string == NULL || string == ""){
-        printf("return 0 since it is NULL\n");
+       // printf("return 0 since it is NULL\n");
         return 0;
     }
     //if the string start with '+' or '-' i.e. -123;
@@ -26,7 +26,7 @@ int isNum(char* string){
             if(string[i] == '.' && !dec){ //i.e 1.3
                 
                 if(i == strlen(string) - 1 || !isdigit(string[i + 1])){//i.e 3.
-                    printf("return 0 since . is the last digit\n");
+                   // printf("return 0 since . is the last digit\n");
                     return 0;
                 }
     
@@ -34,12 +34,12 @@ int isNum(char* string){
                 i++;
                 continue;
             }
-            printf("return 0 since it is not a digit\n");
+           // printf("%s\n i is: %d\n",string, i);
             return 0;
         }   
         i++;
     }
-    printf("return 1 since it is a digit\n");
+   // printf("return 1 since it is a digit\n");
     return 1;
 }    
 
