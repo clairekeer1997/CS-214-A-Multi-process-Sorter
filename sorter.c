@@ -163,7 +163,6 @@ int main (int argc, char* argv[]){
 	i = 0;
 	while(i < num_col){
 		first_row.row_token[i] = trim(first_row.row_token[i], strlen(first_row.row_token[i]) - 1);
-	//	printf("====%s====", first_row.row_token[i]);
 		i++;
 	}
 
@@ -203,6 +202,7 @@ int main (int argc, char* argv[]){
 		i++;
 	}
 
+	//print the rest row;
 	i = 0;
 	j = 0;
 	while(i < num_row){
@@ -228,12 +228,5 @@ int main (int argc, char* argv[]){
 		i++;
 		j = 0;
 	}
-	/*
-	int k = 0;
-	
-	while(k < num_row){
-		printf("the %dth row is %s \n",k, data[k].row_token[27]);
-		k++;
-	}*/
 	return 0;
 }
