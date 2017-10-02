@@ -1,6 +1,10 @@
 #ifndef SORTER_H
 #define SORTER_H
 
+#define BUF_SIZE 1025
+#define TRUE 1
+#define FALSE 0
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

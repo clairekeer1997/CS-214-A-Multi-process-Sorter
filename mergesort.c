@@ -1,8 +1,5 @@
 #include "Sorter.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+
 
 //if it is a number string, return 1, choosing int mergesort
 //otherwise, choosing char mergesort

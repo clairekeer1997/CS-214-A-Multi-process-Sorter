@@ -1,11 +1,5 @@
-#define BUF_SIZE 1025
-#define TRUE 1
-#define FALSE 0
 #include "Sorter.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+
 
 
 char *trim(char *word, int index)
