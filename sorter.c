@@ -187,6 +187,12 @@ int main (int argc, char* argv[]){
 		target_col++;
 	}
 
+	//no such title in the first row
+	if(target_col == first_row.num_col){
+		printf("wrong input, no such title.");
+		exit(1);
+	}
+
 	mergeSort(data, target_col, num_row);
 	
 	
