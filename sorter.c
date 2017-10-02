@@ -23,21 +23,7 @@ char *trim(char *word, int index)
   *(end+1) = 0;
   return word;
 }
-/*char* trim(char* word, int index){
-	//from rear to head;
-	while(word[index] == ' '){			
-		index--;
-	}
-	word[index+1] = '\0';
 
-	//from head to rear;
-	int i = 0;
-	while(word[i] == ' '){
-		i++;
-		word++;
-	}
-	return word;
-}*/
 
 char** tokenizer(char* line, size_t num_col){
     
@@ -109,13 +95,6 @@ char** tokenizer(char* line, size_t num_col){
         i++;
 	}
 	i = 0;
-	//printf("the num of col is %d", num_col);
-	/*while(i < num_col){
-		
-		printf("the %dth token is:--%s--\n", i, result[i]);
-		i++;
-	}
-	//printf("\n");*///debug
 	free(temp);
     return result;
 }
@@ -125,20 +104,16 @@ int tok_file(FILE *fp, row* data, int num_col){
 	rest_row.row_text = (char*) malloc (sizeof(char) * BUF_SIZE);
 	size_t curr_col = 0;
 	size_t curr_row = 0; //current row number in row* data
+	int i;//loop virable
 	/*end of declaring variable*/
 	
 	/*deal with data*/
-	int i = 0;
+	i = 0;
 	while(fgets(rest_row.row_text, BUF_SIZE-1, fp) != NULL){
 		rest_row.row_len = strlen(rest_row.row_text);
 		rest_row.row_token = (char**) malloc(sizeof(char *) * (num_col+1));
 		rest_row.row_token = tokenizer(rest_row.row_text, num_col);
-		/*i = 0;
-		while(i<num_col){
-			printf("the %dth word is--%s--\n", i, rest_row.row_token[i]);
-			i++;
-		}*/
-		///debug
+
 		data[curr_row++] = rest_row;		
 	}
 	return curr_row;
@@ -151,8 +126,16 @@ int main (int argc, char* argv[]){
 
 	//first row:
 	row first_row;
+	row *data;
 	char *token;
+	char* target;
 	size_t num_col = 1;
+	int length;
+	int i;	
+	int j;
+	int k;
+	int num_row; 
+	int target_col;
 
 	/*split the 1st token by ','*/
 	first_row.row_text = (char*) malloc (sizeof(char) * BUF_SIZE);		
@@ -168,42 +151,26 @@ int main (int argc, char* argv[]){
 	}
 	first_row.num_col = num_col;
 
-	//printf("tok length is: %d", strlen(first_row.row_token[num_col - 1]));
 	
 	//delete the '\n' in the last word;
-	//printf("first:%d\n", strlen(first_row.row_token[27]));
 	
-	int length = strlen(first_row.row_token[num_col - 1]);
+	length = strlen(first_row.row_token[num_col - 1]);
 	if(first_row.row_token[num_col - 1][length - 1] == '\n'){
 		first_row.row_token[num_col - 1][length - 2] = '\0';
 	}
-	//printf("tok is: --%s--, length is: %d", first_row.row_token[num_col - 1], strlen(first_row.row_token[num_col - 1]));
-
-	//debug
-	/*int q = 0;
-	while(q < num_col){
-		printf("__%s__\n", first_row.row_token[q]);
-		q++;
-	}*/
-
-	//printf("first:%d\n", strlen(first_row.row_token[27]));
-	
-	//printf("here:%s\n",first_row.row_token[num_col-1]);
 	
 	//trim blank space;
-	int i = 0;
+	i = 0;
 	while(i < num_col){
 		first_row.row_token[i] = trim(first_row.row_token[i], strlen(first_row.row_token[i]) - 1);
 	//	printf("====%s====", first_row.row_token[i]);
 		i++;
 	}
+
 	//deal with rest rows;
-	row *data;
-	int num_row; 
 	data = (row*) malloc (sizeof(row) * 10000);
 	num_row = tok_file(fp, data, num_col);
 	
-	char* target;
 	if(argv[2]){
 		target = argv[2];	
 	}else{
@@ -212,8 +179,7 @@ int main (int argc, char* argv[]){
 	}
 	
 	//find the target column number;
-	int target_col = 0;
-	//printf("target:%d\n", strlen(target));
+	target_col = 0;
 	
 	while(target_col < first_row.num_col){
 		if(strcmp(first_row.row_token[target_col], target) == 0){
@@ -222,7 +188,6 @@ int main (int argc, char* argv[]){
 		target_col++;
 	}
 
-	//printf("%d\n", target_col);
 	mergeSort(data, target_col, num_row);
 	
 	
@@ -238,15 +203,24 @@ int main (int argc, char* argv[]){
 		i++;
 	}
 
-	//print the rest of rows;
 	i = 0;
-	int j = 0;
+	j = 0;
 	while(i < num_row){
 		while(j < num_col){
+			if(data[i].comma){
+				for(k = 0; k < strlen(data[i].row_token[j]); k++){
+					if(data[i].row_token[j][k] == ','){
+						printf("\"%s\",", data[i].row_token[j]);
+						j++;
+						continue;
+					}
+				}
+			}
+
 			printf("%s",data[i].row_token[j]);
 			if(j != num_col - 1){
 				printf(",");
-			}else{
+			}else{ 
 				printf("\n");
 			}
 			j++;

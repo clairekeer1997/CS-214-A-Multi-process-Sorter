@@ -11,6 +11,7 @@ typedef struct{
     char * row_text;
     size_t row_len;
     size_t num_col;
+    int comma;
 }row;
 int compare(char* c1, char* c2);
 void merge(row* L, row* R, row* res, int left, int right, int col);

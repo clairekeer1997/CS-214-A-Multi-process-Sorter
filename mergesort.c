@@ -12,7 +12,6 @@ int isNum(char* string){
     int dec = 0; // 0 if num did not has a decimal, 1 otherwise i.e. 12.333.3
     
     if(string == NULL || string == ""){
-       // printf("return 0 since it is NULL\n");
         return 0;
     }
     //if the string start with '+' or '-' i.e. -123;
@@ -22,11 +21,9 @@ int isNum(char* string){
     
     while(i < strlen(string)){        
         if( !isdigit(string[i])){
-            //printf("here:%c", string[i]);
             if(string[i] == '.' && !dec){ //i.e 1.3
                 
                 if(i == strlen(string) - 1 || !isdigit(string[i + 1])){//i.e 3.
-                   // printf("return 0 since . is the last digit\n");
                     return 0;
                 }
     
@@ -34,21 +31,17 @@ int isNum(char* string){
                 i++;
                 continue;
             }
-           // printf("%s\n i is: %d\n",string, i);
             return 0;
         }   
         i++;
     }
-   // printf("return 1 since it is a digit\n");
     return 1;
 }    
 
 int compare_num (char* c1, char* c2){
     float num_c1 = atof(c1);
     float num_c2 = atof(c2);
-    
-   // printf("first: %.3f, second: %.3f", num_c1, num_c2);
-    
+        
     if(num_c1 <= num_c2){
         return 0;
     }
@@ -121,7 +114,6 @@ void merge(row* L, row* R, row* res, int left, int right, int col){
     }
     i = 0;
     while(i < index){
-       // printf("merge: %dth is %s\n", i, res[i].row_token[22]);
         i++;
     }
 
