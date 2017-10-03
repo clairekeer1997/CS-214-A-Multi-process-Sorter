@@ -8,7 +8,7 @@ int isNum(char* string){
     int isNeg = 0;//0 if num is positive, 1 if num is negative
     int dec = 0; // 0 if num did not has a decimal, 1 otherwise i.e. 12.333.3
     
-    if(string == NULL || string == ""){
+    if(string == NULL || strcmp(string, "") == 0){
         return 0;
     }
     //if the string start with '+' or '-' i.e. -123;

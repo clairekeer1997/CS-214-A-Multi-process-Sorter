@@ -15,7 +15,7 @@ typedef struct{
     char * row_text;
     size_t row_len;
     size_t num_col;
-    int comma;
+    int comma;//true if there is no comma, false if there is a comma in the row
 }row;
 
 int compare(char* c1, char* c2);
