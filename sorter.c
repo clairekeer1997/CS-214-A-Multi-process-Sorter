@@ -19,26 +19,23 @@ char *trim(char *word, int index)
 }
 
 
-char** tokenizer(row curr_row, size_t num_col){
+char** tokenizer(char* line, size_t num_col){
+    
     int i, j, k;
     i = 0;//current position in line;
     j = 0;//current position in tmp;
     k = 0;//current position in result;
     
     char** result = (char**)malloc(sizeof(char*) * (num_col + 1)); //return value;
-	char* temp = (char*)malloc(500);//store each word;
-	char* line = curr_row.row_text;
-	
+    char* temp = (char*)malloc(500);//store each word;
 	size_t start_quote = FALSE;//1 quote start, 0 quote end;
-	curr_row.comma = TRUE;
-	printf("comma: %d\n", curr_row.comma);
+	
     //go through each character;
     while(i < strlen(line)){
 		
 		/*reach the start '"' */
 		if(line[i] == '"' && start_quote == FALSE){
 			start_quote = TRUE;
-			curr_row.comma = FALSE;
 		}
 				
 		else if(line[i] == '"' && start_quote == TRUE){
@@ -75,8 +72,7 @@ char** tokenizer(row curr_row, size_t num_col){
 				temp[0] = '\0';
 				result[k] = (char*)malloc((j+1) * sizeof(char));
 				strcpy(result[k], temp);
-				memset(&temp[0], 0, strlen(temp));
-				break;								
+				memset(&temp[0], 0, strlen(temp));								
 			}
 
         }else{
@@ -110,8 +106,7 @@ int tok_file(FILE *fp, row* data, int num_col){
 	while(fgets(rest_row.row_text, BUF_SIZE-1, fp) != NULL){
 		rest_row.row_len = strlen(rest_row.row_text);
 		rest_row.row_token = (char**) malloc(sizeof(char *) * (num_col+1));
-		rest_row.row_token = tokenizer(rest_row, num_col);
-
+		rest_row.row_token = tokenizer(rest_row.row_text, num_col);
 		data[curr_row++] = rest_row;		
 	}
 	return curr_row;
@@ -154,7 +149,7 @@ int main (int argc, char* argv[]){
 	
 	length = strlen(first_row.row_token[num_col - 1]);
 	if(first_row.row_token[num_col - 1][length - 1] == '\n'){
-		first_row.row_token[num_col - 1][length - 1] = '\0';
+		first_row.row_token[num_col - 1][length - 2] = '\0';
 	}
 	
 	//trim blank space;
@@ -186,7 +181,7 @@ int main (int argc, char* argv[]){
 	}
 
 	//no such title in the first row
-	if(target_col == num_col){
+	if(target_col == first_row.num_col){
 		printf("Wrong input, no such title.\n");
 		exit(1);
 	}
@@ -209,26 +204,24 @@ int main (int argc, char* argv[]){
 	//print the rest row;
 	i = 0;
 	j = 0;
-	next_row:
+	next:
 	while(i < num_row){
-		next_col:
 		while(j < num_col){
-			if(data[i].comma!){//if there is a comma in the row;
-				for(k = 0; k < strlen(data[i].row_token[j]); k++){//loop each char
-
+			//if(data[i].comma){
+				for(k = 0; k < strlen(data[i].row_token[j]); k++){
 					if(data[i].row_token[j][k] == ',' && j != num_col - 1){
 						printf("\"%s\",", data[i].row_token[j]);
 						j++;
-						goto next_col;
+						break;
 					}
 					if(data[i].row_token[j][k] == ',' && j == num_col - 1){ 
-						printf("\"%s\"\n", data[i].row_token[j]);
+						printf("\"%s\"", data[i].row_token[j]);
 						i++;
 						j = 0;
-						goto next_row;
+						goto next;
 					}
 				}
-			}
+			//}
 
 			printf("%s",data[i].row_token[j]);
 			if(j != num_col - 1){
