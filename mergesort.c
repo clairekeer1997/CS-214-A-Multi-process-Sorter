@@ -73,8 +73,6 @@ int compare(char* c1, char* c2){
   }
 }
 
-
-
 /* This function is used to do mergeing. Merge L and R to Res; 
 left is the size of L, right is the size of right; 
 col is the column number we need to get; 
@@ -115,6 +113,7 @@ void merge(row* L, row* R, row* res, int left, int right, int col){
     }
 
 }
+
 void mergeSort(row* target, int col, int n){
 
     int i, mid;

@@ -183,7 +183,7 @@ int main (int argc, char* argv[]){
 
 	//no such title in the first row
 	if(target_col == first_row.num_col){
-		printf("wrong input, no such title.");
+		printf("Wrong input, no such title.\n");
 		exit(1);
 	}
 
@@ -205,14 +205,21 @@ int main (int argc, char* argv[]){
 	//print the rest row;
 	i = 0;
 	j = 0;
+	next:
 	while(i < num_row){
 		while(j < num_col){
 			if(data[i].comma){
 				for(k = 0; k < strlen(data[i].row_token[j]); k++){
-					if(data[i].row_token[j][k] == ','){
+					if(data[i].row_token[j][k] == ',' && j != num_col - 1){
 						printf("\"%s\",", data[i].row_token[j]);
 						j++;
-						continue;
+						break;
+					}
+					if(data[i].row_token[j][k] == ',' && j == num_col - 1){ 
+						printf("\"%s\"", data[i].row_token[j]);
+						i++;
+						j = 0;
+						goto next;
 					}
 				}
 			}
