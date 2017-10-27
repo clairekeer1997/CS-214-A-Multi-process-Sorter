@@ -55,7 +55,7 @@ void directory(char* path){
             pid = fork();
             if(pid == 0){
                 directory(temppath);
-                return;
+                exit(1);
             }
         }
         else{
@@ -73,7 +73,7 @@ void directory(char* path){
         
     }
     waitpid(pid, &status, 0);
-    printf("process %d terminates %d\n", getpid());
+   // printf("process %d terminates %d\n", getpid());
     
    
 }
