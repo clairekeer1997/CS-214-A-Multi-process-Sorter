@@ -111,128 +111,153 @@ int tok_file(FILE *fp, row* data, int num_col){
 	}
 	return curr_row;
 }
-
-int main (int argc, char* argv[]){
-	/*declare variable*/
-	FILE *fp;
-	fp = stdin;
-
-	//first row:
-	row first_row;
-	row *data;
-	char *token;
-	char* target;
-	size_t num_col = 1;
-	int length;
-	int i;	
-	int j;
-	int k;
-	int num_row; 
-	int target_col;
-
-	/*split the 1st token by ','*/
-	first_row.row_text = (char*) malloc (sizeof(char) * BUF_SIZE);		
-	fgets(first_row.row_text, BUF_SIZE-1, fp);
-	first_row.row_len = strlen(first_row.row_text);
-	first_row.row_token = (char**) malloc(sizeof(char *) * first_row.row_len);
-	token = strtok(first_row.row_text, ",");
-	first_row.row_token[0] = token;
-
-	//split the rest of token in the first row
-	while(token = strtok(NULL, ",")){
-		first_row.row_token[num_col++] = token;	
-	}
-	first_row.num_col = num_col;
-
+void sort(char* filename, char* colname, char* odirname){
+		/*declare variable*/
+		FILE *fp;
+		fp = fopen(filename,"r");
+		
+		//first row:
+		row first_row;
+		row *data;
+		char *token;
+		char* target;
+		size_t num_col = 1;
+		int length;
+		int i;	
+		int j;
+		int k;
+		int num_row; 
+		int target_col;
 	
-	//delete the '\n' in the last word;
+		/*split the 1st token by ','*/
+		first_row.row_text = (char*) malloc (sizeof(char) * BUF_SIZE);		
+		fgets(first_row.row_text, BUF_SIZE-1, fp);
+		first_row.row_len = strlen(first_row.row_text);
+		first_row.row_token = (char**) malloc(sizeof(char *) * first_row.row_len);
+		token = strtok(first_row.row_text, ",");
+		first_row.row_token[0] = token;
 	
-	length = strlen(first_row.row_token[num_col - 1]);
-	if(first_row.row_token[num_col - 1][length - 1] == '\n'){
-		first_row.row_token[num_col - 1][length - 2] = '\0';
-	}
-	
-	//trim blank space;
-	i = 0;
-	while(i < num_col){
-		first_row.row_token[i] = trim(first_row.row_token[i], strlen(first_row.row_token[i]) - 1);
-		i++;
-	}
-
-	//deal with rest rows;
-	data = (row*) malloc (sizeof(row) * 10000);
-	num_row = tok_file(fp, data, num_col);
-	
-	if(argv[2]){
-		target = argv[2];	
-	}else{
-		printf("Wrong Input");
-		exit(1);
-	}
-	
-	//find the target column number;
-	target_col = 0;
-	
-	while(target_col < first_row.num_col){
-		if(strcmp(first_row.row_token[target_col], target) == 0){
-			break;
+		//split the rest of token in the first row
+		while(token = strtok(NULL, ",")){
+			first_row.row_token[num_col++] = token;	
 		}
-		target_col++;
-	}
-
-	//no such title in the first row
-	if(target_col == first_row.num_col){
-		printf("Wrong input, no such title.\n");
-		exit(1);
-	}
-
-	mergeSort(data, target_col, num_row);
+		first_row.num_col = num_col;
 	
-	
-	i = 0;
-	//print the first row:
-	while(i < num_col){
-		printf("%s",first_row.row_token[i]);
-		if(i != num_col - 1){
-			printf(",");
-		}else{
-			printf("\n");
+		
+		//delete the '\n' in the last word;
+		
+		length = strlen(first_row.row_token[num_col - 1]);
+		if(first_row.row_token[num_col - 1][length - 1] == '\n'){
+			first_row.row_token[num_col - 1][length - 2] = '\0';
 		}
-		i++;
-	}
+		
+		//trim blank space;
+		i = 0;
+		while(i < num_col){
+			first_row.row_token[i] = trim(first_row.row_token[i], strlen(first_row.row_token[i]) - 1);
+			i++;
+		}
+		
+		//deal with rest rows;
+		data = (row*) malloc (sizeof(row) * 10000);
+		num_row = tok_file(fp, data, num_col);
+		
+		target = colname;
+		
+		//find the target column number;
+		target_col = 0;
+		
+		while(target_col < first_row.num_col){
+			if(strcmp(first_row.row_token[target_col], target) == 0){
+				break;
+			}
+			target_col++;
+		}
+	
+		//no such title in the first row
+		if(target_col == first_row.num_col){
+			printf("Wrong input, no such title.\n");
+			exit(1);
+		}
+	
+		mergeSort(data, target_col, num_row);
 
-	//print the rest row;
-	i = 0;
-	j = 0;
-	next:
-	while(i < num_row){
-		while(j < num_col){
-			//if(data[i].comma){
-				for(k = 0; k < strlen(data[i].row_token[j]); k++){
-					if(data[i].row_token[j][k] == ',' && j != num_col - 1){
-						printf("\"%s\",", data[i].row_token[j]);
-						j++;
-						break;
-					}
-					if(data[i].row_token[j][k] == ',' && j == num_col - 1){ 
-						printf("\"%s\"", data[i].row_token[j]);
-						i++;
-						j = 0;
-						goto next;
-					}
-				}
-			//}
-
-			printf("%s",data[i].row_token[j]);
-			if(j != num_col - 1){
+		i = 0;
+		//print the first row:
+		while(i < num_col){
+			printf("%s",first_row.row_token[i]);
+			if(i != num_col - 1){
 				printf(",");
-			}else{ 
+			}else{
 				printf("\n");
 			}
-			j++;
+			i++;
 		}
-		i++;
+	
+		//print the rest row;
+		i = 0;
 		j = 0;
+		next:
+		while(i < num_row){
+			while(j < num_col){
+				//if(data[i].comma){
+					for(k = 0; k < strlen(data[i].row_token[j]); k++){
+						if(data[i].row_token[j][k] == ',' && j != num_col - 1){
+							printf("\"%s\",", data[i].row_token[j]);
+							j++;
+							break;
+						}
+						if(data[i].row_token[j][k] == ',' && j == num_col - 1){ 
+							printf("\"%s\"", data[i].row_token[j]);
+							i++;
+							j = 0;
+							goto next;
+						}
+					}
+				//}
+	
+				printf("%s",data[i].row_token[j]);
+				if(j != num_col - 1){
+					printf(",");
+				}else{ 
+					printf("\n");
+				}
+				j++;
+			}
+			i++;
+			j = 0;
+		}
+
+}
+int main (int argc, char* argv[]){
+
+	//declare variables;
+	char* colname;
+	char* dirname;
+	char* odirname;
+
+	//check the flags;
+	if(strcmp(argv[1], "-c") != 0 || strcmp(argv[3], "-d") != 0 || strcmp(argv[5], "-o") != 0){ //|| argv[3] != "-d" || argv[5] != "-o"
+		printf("Wrong input.");
+		exit(0);
 	}
+
+	//get the input;
+	if(argv[2]){
+		colname = argv[2];
+		if(argv[4]){
+			dirname = argv[4];
+		}
+	}else{
+		printf("Wrong input.");
+		exit(0);
+	}
+	if(argv[6]){
+		odirname = argv[6];
+	}
+
+	sort(dirname, colname, odirname);
+
+	
 	return 0;
 }
