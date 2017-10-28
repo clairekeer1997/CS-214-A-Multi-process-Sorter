@@ -52,6 +52,7 @@ void directory(char* path, pid_t* arr, int i){
         if(isDirectory(temppath)){
            // printf("I'm directory %s\n", dir_ptr->d_name);
             pid = fork();
+            
             if(pid == 0){
                 directory(temppath, arr, i);
                 exit(1);
@@ -71,15 +72,14 @@ void directory(char* path, pid_t* arr, int i){
                     arr[i] = pid;
                     i++;
                     printf(" my pid is: %d, my ppid is %d\n" , getpid(), getppid());
+ 							fflush(stdout);               
                 }
                 else if(pid == 0){
                     printf("I'm a csv. %s\n", dir_ptr->d_name);
+                    fflush(stdout);
                     exit(1);
                 }
-                //
-                
-             //   printf("current temppath: %s\n", temppath);
-                
+             //   printf("current temppath: %s\n", temppath); 
             }
         }
         
@@ -97,10 +97,13 @@ int main(int argc, char* argv[]){
     int i = 0;
      directory(path,arr, i);
     i = 0;
-    while(i < 5){
+    int status;
+    while(i < 10){
         printf("%d \n", arr[i]);
         i++;
+        waitpid(arr[i], &status, 0);
     }
+    fflush(stdout);
    /* if(file){
         printf("success!");
     }*/
