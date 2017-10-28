@@ -182,14 +182,22 @@ void sort(char* filename, char* colname, char* odirname){
 	
 		mergeSort(data, target_col, num_row);
 
+		char* output_filename = filename;
+		char* c1 = "-sorted-";
+		char* c2 = ".csv";
+		strcat(output_filename, c1);
+		strcat(output_filename, colname);
+		strcat(output_filename, c2);
+
+		FILE* outfptr = fopen(output_filename, "w");
 		i = 0;
 		//print the first row:
 		while(i < num_col){
-			printf("%s",first_row.row_token[i]);
+			fprintf(outfptr, "%s",first_row.row_token[i]);
 			if(i != num_col - 1){
-				printf(",");
+				fprintf(outfptr, ",");
 			}else{
-				printf("\n");
+				fprintf(outfptr, "\n");
 			}
 			i++;
 		}
@@ -203,12 +211,12 @@ void sort(char* filename, char* colname, char* odirname){
 				//if(data[i].comma){
 					for(k = 0; k < strlen(data[i].row_token[j]); k++){
 						if(data[i].row_token[j][k] == ',' && j != num_col - 1){
-							printf("\"%s\",", data[i].row_token[j]);
+							fprintf(outfptr, "\"%s\",", data[i].row_token[j]);
 							j++;
 							break;
 						}
 						if(data[i].row_token[j][k] == ',' && j == num_col - 1){ 
-							printf("\"%s\"", data[i].row_token[j]);
+							fprintf(outfptr, "\"%s\"", data[i].row_token[j]);
 							i++;
 							j = 0;
 							goto next;
@@ -216,11 +224,11 @@ void sort(char* filename, char* colname, char* odirname){
 					}
 				//}
 	
-				printf("%s",data[i].row_token[j]);
+				fprintf(outfptr, "%s",data[i].row_token[j]);
 				if(j != num_col - 1){
-					printf(",");
+					fprintf(outfptr, ",");
 				}else{ 
-					printf("\n");
+					fprintf(outfptr, "\n");
 				}
 				j++;
 			}

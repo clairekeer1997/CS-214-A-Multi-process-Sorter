@@ -99,7 +99,6 @@ int main(int argc, char* argv[]){
     i = 0;
     int status;
     while(arr[i] != 0){
-        //printf("%d \n", arr[i]);
         i++;
         waitpid(arr[i], &status, 0);
     }
