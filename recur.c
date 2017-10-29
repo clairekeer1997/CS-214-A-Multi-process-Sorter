@@ -24,7 +24,7 @@ char* path_contact(const char* str1,const char* str2){
     strcat(result,str2);  
     return result;  
 }  
-void directory(char* path, pid_t* arr, int i){
+pid_t* directory(char* path, pid_t* arr, int i){
     DIR *dir_p;
     struct dirent *dir_ptr;
     dir_p = opendir(path);
@@ -50,15 +50,23 @@ void directory(char* path, pid_t* arr, int i){
         }
 
         if(isDirectory(temppath)){
-           // printf("I'm directory %s\n", dir_ptr->d_name);
+            printf("I'm directory %s\n", dir_ptr->d_name);
             pid = fork();
             
             if(pid == 0){
-                directory(temppath, arr, i);
+                arr = directory(temppath, arr, i);
                 exit(1);
             }else if(pid > 0){
+                waitpid(pid, &status, 0);
+               printf("name: %s, current i%d, pid: %d\n", dir_ptr->d_name, i, pid);
+               // int address = &arr[4];
+               // printf("address: %d\n", address);
+                i = 0;
+                while(arr[i]){
+                  i++;
+                }
                 arr[i] = pid;
-                i++;
+                printf("%d\n", i);
             }
         }
         else{
@@ -69,24 +77,23 @@ void directory(char* path, pid_t* arr, int i){
             name[length - 1] == 'v'){
                pid = fork();
                 if(pid > 0){
+                    printf("name: %s, pid: %d\n", dir_ptr->d_name, pid);
                     arr[i] = pid;
-                    i++;
-                   // printf(" my pid is: %d, my ppid is %d\n" , getpid(), getppid());
- 						//	fflush(stdout);               
+                    i++;          
                 }
                 else if(pid == 0){
-                   // printf("I'm a csv. %s\n", dir_ptr->d_name);
-                    //fflush(stdout);
+                    printf("I'm a csv. %s\n", dir_ptr->d_name);
                     exit(1);
                 }
-             //   printf("current temppath: %s\n", temppath); 
             }
         }
         
     }
-   // printf("process %d terminates %d\n", getpid());
-
-   
+    pid_t waitid;
+    while ((waitid = wait(NULL)) > 0){        
+        // exit when -1 all children done;
+    }
+    return arr;
 }
 
 int main(int argc, char* argv[]){
@@ -95,19 +102,13 @@ int main(int argc, char* argv[]){
     printf("first path: %s\n", path);
     pid_t* arr = (pid_t*)malloc(300 * sizeof(pid_t));
     int i = 0;
-     directory(path,arr, i);
+   arr =  directory(path,arr, i);
     i = 0;
-    int status;
     while(arr[i] != 0){
-        i++;
-        waitpid(arr[i], &status, 0);
-    }
-    i = 0;
-    while(i < 3){
         printf("%d \n", arr[i]);
         i++;
     }
-    fflush(stdout);
+   // fflush(stdout);
    /* if(file){
         printf("success!");
     }*/
