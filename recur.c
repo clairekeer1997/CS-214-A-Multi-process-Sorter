@@ -50,23 +50,15 @@ pid_t* directory(char* path, pid_t* arr, int i){
         }
 
         if(isDirectory(temppath)){
-            printf("I'm directory %s\n", dir_ptr->d_name);
+            //printf("I'm directory %s\n", dir_ptr->d_name);
             pid = fork();
             
             if(pid == 0){
                 arr = directory(temppath, arr, i);
                 exit(1);
             }else if(pid > 0){
-                waitpid(pid, &status, 0);
-               printf("name: %s, current i%d, pid: %d\n", dir_ptr->d_name, i, pid);
-               // int address = &arr[4];
-               // printf("address: %d\n", address);
-                i = 0;
-                while(arr[i]){
-                  i++;
-                }
-                arr[i] = pid;
-                printf("%d\n", i);
+                //waitpid(pid, &status, 0);
+                printf("pid: %d\n", pid);
             }
         }
         else{
@@ -77,12 +69,12 @@ pid_t* directory(char* path, pid_t* arr, int i){
             name[length - 1] == 'v'){
                pid = fork();
                 if(pid > 0){
-                    printf("name: %s, pid: %d\n", dir_ptr->d_name, pid);
+                    printf("pid: %d\n", pid);
                     arr[i] = pid;
                     i++;          
                 }
                 else if(pid == 0){
-                    printf("I'm a csv. %s\n", dir_ptr->d_name);
+                   // printf("I'm a csv. %s\n", dir_ptr->d_name);
                     exit(1);
                 }
             }
@@ -105,7 +97,7 @@ int main(int argc, char* argv[]){
    arr =  directory(path,arr, i);
     i = 0;
     while(arr[i] != 0){
-        printf("%d \n", arr[i]);
+      //  printf("%d \n", arr[i]);
         i++;
     }
    // fflush(stdout);
