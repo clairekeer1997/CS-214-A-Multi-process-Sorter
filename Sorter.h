@@ -5,10 +5,14 @@
 #define TRUE 1
 #define FALSE 0
 
-#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdlib.h>
+#include <dirent.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
 #include <string.h>
-#include <ctype.h>
 
 typedef struct{
     char** row_token;
