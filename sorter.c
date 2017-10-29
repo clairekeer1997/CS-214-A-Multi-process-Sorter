@@ -186,7 +186,7 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath){
 		}
 	
 		//no such title in the first row
-		if(target_col == (first_row.num_col + 1)){
+		if(target_col == (first_row.num_col)){
             printf("Wrong input, no such title.\n");
 			exit(1);
 		}
@@ -234,20 +234,19 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath){
 		while(i < num_row){
 			while(j < num_col){
 				//if(data[i].comma){
-					for(k = 0; k < strlen(data[i].row_token[j]); k++){
-						if(data[i].row_token[j][k] == ',' && j != num_col - 1){
-							fprintf(outfptr, "\"%s\",", data[i].row_token[j]);
-							j++;
-							break;
-						}
-						if(data[i].row_token[j][k] == ',' && j == num_col - 1){ 
-							fprintf(outfptr, "\"%s\"", data[i].row_token[j]);
-							i++;
-							j = 0;
-							goto next;
-						}
+				for(k = 0; k < strlen(data[i].row_token[j]); k++){
+					if(data[i].row_token[j][k] == ',' && j != num_col - 1){
+						fprintf(outfptr, "\"%s\",", data[i].row_token[j]);
+						j++;
+						break;
 					}
-				//}
+					if(data[i].row_token[j][k] == ',' && j == num_col - 1){ 
+						fprintf(outfptr, "\"%s\"", data[i].row_token[j]);
+						i++;
+						j = 0;
+						goto next;
+					}
+				}
 	
 				fprintf(outfptr, "%s",data[i].row_token[j]);
 				if(j != num_col - 1){
@@ -270,6 +269,41 @@ int isDirectory(char *path) {
     return S_ISDIR(statbuf.st_mode);
  }
 
+int checkcsv(char* path, char* colname){
+	FILE *fptr;
+	fptr = fopen(path, "r");
+
+	//get the first line of this file;
+	char* text = (char*)malloc(500);
+	fgets(text, BUF_SIZE-1, fptr);
+	
+	char* token = malloc(50);
+	char** row_token = (char**) malloc(sizeof(char *) * (strlen(text)));
+	
+	token = strtok(text, ",");
+	row_token[0] = token;
+
+	int num_col = 1;
+	while(token = strtok(NULL, ",")){
+		row_token[num_col++] = token;	
+	}
+
+	//find the target column;
+	int target_col = 0;
+	while(target_col < num_col){
+		if(strcmp(row_token[target_col], colname) == 0){
+			break;
+		}
+		target_col++;
+	}
+
+	//no such title, not the target csv file;
+	if(target_col == num_col){
+		return 0;
+	}
+	return 1; 
+	
+}
 void directory(char* path, char* colname, char* odirname){
     DIR *dir_p;
     struct dirent *dir_ptr;
@@ -278,7 +312,7 @@ void directory(char* path, char* colname, char* odirname){
     pid_t pid;
 //dir_ptr = readdir(dir_p);
     if(dir_p == NULL){
-        printf("wrong!\n");
+        printf("Wrong Path\n");
         exit(1);
     }
     while((dir_ptr = readdir(dir_p)) != NULL){
@@ -297,7 +331,7 @@ void directory(char* path, char* colname, char* odirname){
                 directory(temppath, colname, odirname);
                 exit(1);
             }else if(pid > 0){
-                printf("pid: %d\n", pid);
+                printf("%d\n", pid);
             }
         }
         else{
@@ -306,14 +340,16 @@ void directory(char* path, char* colname, char* odirname){
             if(name[length - 3] == 'c' &&
             name[length - 2] == 's' &&
             name[length - 1] == 'v'){
-               pid = fork();
-                if(pid > 0){
-                    printf("pid: %d\n", pid);     
-                }
-                else if(pid == 0){
-					sort(name, colname, odirname, temppath);
-                    exit(0);
-                }
+				if(checkcsv(temppath, colname)){
+					pid = fork();
+					if(pid > 0){
+						printf("%d\n",pid);     
+					}
+					else if(pid == 0){
+						sort(name, colname, odirname, temppath);
+						exit(0);
+					}
+				}   	
             }
         }
         
@@ -330,8 +366,8 @@ int main (int argc, char* argv[]){
 	char* dirname;
 	char* odirname;
 
-	//check the flags;
-	if(strcmp(argv[1], "-c") != 0 || strcmp(argv[3], "-d") != 0 || strcmp(argv[5], "-o") != 0){ //|| argv[3] != "-d" || argv[5] != "-o"
+	//check the flag;
+	if(strcmp(argv[1], "-c") != 0){
 		printf("Wrong input.");
 		exit(0);
 	}
@@ -339,19 +375,20 @@ int main (int argc, char* argv[]){
 	//get the input;
 	if(argv[2]){
 		colname = argv[2];
-		if(argv[4]){
-			dirname = argv[4];
-		}
 	}else{
 		printf("Wrong input.");
 		exit(0);
 	}
-	if(argv[6]){
+	if(strcmp(argv[1], "-d") && argv[4]){
+		dirname = argv[4];
+	}
+	if(strcmp(argv[1], "-o") && argv[6]){
 		odirname = argv[6];
 	}
 
-	directory(dirname, colname, odirname);
-
+	printf("Initial PID: %d\nPIDS of all child processes: \n", getpid());
 	
+	directory(dirname, colname, odirname);
+	printf("Total Number of processes: \n");
 	return 0;
 }

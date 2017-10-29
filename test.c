@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#define BUF_SIZE 1025
 
 int isDirectory(char *path) {
     struct stat statbuf;
@@ -80,11 +81,16 @@ void directory(char* path){
 
 int main(int argc, char* argv[]){
     char* path= argv[1];
-    FILE *file;
-    printf("first path: %s\n", path);
-    directory(path);
-   /* if(file){
-        printf("success!");
-    }*/
+    FILE *fp;
+    FILE *fp2;
+    fp = fopen(path, "r");
+    fp2 = fopen(path, "r");
+    char* text = (char*)malloc(1000);
+    fgets(text, BUF_SIZE-1, fp2);
+    printf("---%s\n", text);
+    fgets(text, BUF_SIZE-1, fp);
+    printf("%s\n", text);
+    fgets(text, BUF_SIZE-1, fp2);
+    printf("---%s\n", text);
     return 0;
 }
