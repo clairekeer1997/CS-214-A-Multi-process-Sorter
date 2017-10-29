@@ -1,6 +1,19 @@
 #include "Sorter.h"
 
 
+char* path_contact(const char* str1,const char* str2){ 
+    char* result;  
+    result=(char*)malloc(strlen(str1)+strlen(str2)+ 3);
+    if(!result){
+        printf("fail to allocate memory space\n");  
+        exit(1);  
+    }  
+
+	strcpy(result,str1);  
+	strcat(result,"/");
+	strcat(result,str2);  
+    return result;  
+}  
 
 char *trim(char *word, int index)
 {
@@ -182,14 +195,28 @@ void sort(char* filename, char* colname, char* odirname){
 	
 		mergeSort(data, target_col, num_row);
 
-		char* output_filename = filename;
+		/*cut .csv from original file name*/
+		char* ptr_end = filename + (strlen(filename) - 4);
+		*ptr_end = 0;
+
+
+		char* output_filename = (char*) malloc(strlen(filename) + strlen(colname) + 13);
+		char* output_path;
 		char* c1 = "-sorted-";
 		char* c2 = ".csv";
+		strcpy(output_filename, filename);
 		strcat(output_filename, c1);
 		strcat(output_filename, colname);
 		strcat(output_filename, c2);
 
-		FILE* outfptr = fopen(output_filename, "w");
+		output_path = path_contact(odirname, output_filename);
+			
+		FILE* outfptr = fopen(output_path, "w");
+		if(outfptr == NULL){
+			printf("wrong");
+			exit(1);		
+		}
+
 		i = 0;
 		//print the first row:
 		while(i < num_col){
@@ -263,7 +290,7 @@ int main (int argc, char* argv[]){
 	if(argv[6]){
 		odirname = argv[6];
 	}
-
+	
 	sort(dirname, colname, odirname);
 
 	
