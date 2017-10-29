@@ -5,6 +5,7 @@
 #define TRUE 1
 #define FALSE 0
 
+#include <ctype.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>

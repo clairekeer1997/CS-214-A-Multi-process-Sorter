@@ -24,13 +24,14 @@ char* path_contact(const char* str1,const char* str2){
     strcat(result,str2);  
     return result;  
 }  
-void directory(char* path){
+void directory(char* path, pid_t* arr, int i){
     DIR *dir_p;
     struct dirent *dir_ptr;
     dir_p = opendir(path);
     path = path_contact(path, "/");
     FILE *result;
     pid_t pid;
+    int status;
 
     while((dir_ptr = readdir(dir_p)) != NULL){
         char* temppath;
@@ -45,7 +46,7 @@ void directory(char* path){
         if(isDirectory(temppath)){
             pid = fork();
             if(pid == 0){
-                directory(temppath);
+                directory(temppath, arr, i);
                 exit(1);
             }else if(pid > 0){
                 printf("pid: %d\n", pid);
@@ -80,6 +81,10 @@ int main(int argc, char* argv[]){
     printf("first path: %s\n", path);
     pid_t* arr = (pid_t*)malloc(300 * sizeof(pid_t));
     int i = 0;
-    directory(path);
+    directory(path,arr, i);
+   // fflush(stdout);
+   /* if(file){
+        printf("success!");
+    }*/
     return 0;
 }

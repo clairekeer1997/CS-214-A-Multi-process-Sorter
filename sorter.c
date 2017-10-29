@@ -102,7 +102,6 @@ char** tokenizer(char* line, size_t num_col){
         i++;
 	}
 	i = 0;
-	free(temp);
     return result;
 }
 
@@ -124,10 +123,10 @@ int tok_file(FILE *fp, row* data, int num_col){
 	}
 	return curr_row;
 }
-void sort(char* filename, char* colname, char* odirname){
+void sort(char* filename, char* colname, char* odirname, char* tmppath){
 		/*declare variable*/
 		FILE *fp;
-		fp = fopen(filename,"r");
+		fp = fopen(tmppath,"r");
 		
 		//first row:
 		row first_row;
@@ -155,7 +154,6 @@ void sort(char* filename, char* colname, char* odirname){
 			first_row.row_token[num_col++] = token;	
 		}
 		first_row.num_col = num_col;
-	
 		
 		//delete the '\n' in the last word;
 		
@@ -188,8 +186,8 @@ void sort(char* filename, char* colname, char* odirname){
 		}
 	
 		//no such title in the first row
-		if(target_col == first_row.num_col){
-			printf("Wrong input, no such title.\n");
+		if(target_col == (first_row.num_col + 1)){
+            printf("Wrong input, no such title.\n");
 			exit(1);
 		}
 	
@@ -276,10 +274,13 @@ void directory(char* path, char* colname, char* odirname){
     DIR *dir_p;
     struct dirent *dir_ptr;
     dir_p = opendir(path);
-    path = path_contact(path, "/");
     FILE *result;
     pid_t pid;
-
+//dir_ptr = readdir(dir_p);
+    if(dir_p == NULL){
+        printf("wrong!\n");
+        exit(1);
+    }
     while((dir_ptr = readdir(dir_p)) != NULL){
         char* temppath;
         temppath = path_contact(path, dir_ptr->d_name);
@@ -289,7 +290,7 @@ void directory(char* path, char* colname, char* odirname){
            strcmp(dir_ptr->d_name, "..") == 0){
             continue;
         }
-
+        
         if(isDirectory(temppath)){
             pid = fork();
             if(pid == 0){
@@ -310,8 +311,8 @@ void directory(char* path, char* colname, char* odirname){
                     printf("pid: %d\n", pid);     
                 }
                 else if(pid == 0){
-					sort(dir_ptr->d_name, colname, odirname);
-                    exit(1);
+					sort(name, colname, odirname, temppath);
+                    exit(0);
                 }
             }
         }
@@ -348,7 +349,7 @@ int main (int argc, char* argv[]){
 	if(argv[6]){
 		odirname = argv[6];
 	}
-	
+
 	directory(dirname, colname, odirname);
 
 	
