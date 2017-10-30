@@ -9,8 +9,8 @@ char* path_contact(const char* str1,const char* str2){
         exit(1);  
     }  
 
-	strcpy(result,str1);  
-	strcat(result,"/");
+	strcpy(result,str1);
+    strcat(result,"/");   
 	strcat(result,str2);  
     return result;  
 }  
@@ -123,7 +123,7 @@ int tok_file(FILE *fp, row* data, int num_col){
 	}
 	return curr_row;
 }
-void sort(char* filename, char* colname, char* odirname, char* tmppath){
+void sort(char* filename, char* colname, char* odirname, char* tmppath, char* currPath){
 		/*declare variable*/
 		FILE *fp;
 		fp = fopen(tmppath,"r");
@@ -206,9 +206,15 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath){
 		strcat(output_filename, c1);
 		strcat(output_filename, colname);
 		strcat(output_filename, c2);
-
-		output_path = path_contact(odirname, output_filename);
+        
+        // May be no out put directory
+        if(odirname){
+            output_path = path_contact(odirname, output_filename);   
+        }else{
+            output_path = path_contact(currPath, output_filename);
+        }
 		
+        
 		FILE* outfptr = fopen(output_path, "w");
 		if(outfptr == NULL){
 			printf("wrong");
@@ -310,23 +316,28 @@ void directory(char* path, char* colname, char* odirname){
     dir_p = opendir(path);
     FILE *result;
     pid_t pid;
-//dir_ptr = readdir(dir_p);
+
     if(dir_p == NULL){
         printf("Wrong Path\n");
         exit(1);
     }
-    while((dir_ptr = readdir(dir_p)) != NULL){
+    
+    // loop each file and folder in current directory
+    while(dir_ptr = readdir(dir_p)){
         char* temppath;
         temppath = path_contact(path, dir_ptr->d_name);
         struct stat st;
         stat(temppath, &st);
+        
+        /*skip forward and back folder*/
         if(strcmp(dir_ptr->d_name, ".") == 0 ||
            strcmp(dir_ptr->d_name, "..") == 0){
             continue;
         }
         
-        if(isDirectory(temppath)){
+        if(isDirectory(temppath)){ // sub-folder
             pid = fork();
+            
             if(pid == 0){
                 directory(temppath, colname, odirname);
                 exit(1);
@@ -334,19 +345,22 @@ void directory(char* path, char* colname, char* odirname){
                 printf("%d\n", pid);
             }
         }
-        else{
+        else{ // file
             char *name = dir_ptr->d_name;
             int length = strlen(name);
+            
+            /* .csv file*/
             if(name[length - 3] == 'c' &&
-            name[length - 2] == 's' &&
-            name[length - 1] == 'v'){
-				if(checkcsv(temppath, colname)){
+               name[length - 2] == 's' &&
+               name[length - 1] == 'v'){
+			
+                if(checkcsv(temppath, colname)){
 					pid = fork();
 					if(pid > 0){
 						printf("%d\n",pid);     
 					}
 					else if(pid == 0){
-						sort(name, colname, odirname, temppath);
+						sort(name, colname, odirname, temppath, path);
 						exit(0);
 					}
 				}   	
@@ -365,27 +379,58 @@ int main (int argc, char* argv[]){
 	char* colname;
 	char* dirname;
 	char* odirname;
-
+    char currDir[MAX_DIR];
+    getcwd(currDir, MAX_DIR);
+    
 	//check the flag;
-	if(strcmp(argv[1], "-c") != 0){
-		printf("Wrong input.");
-		exit(0);
+	if(strcmp(argv[1], "-c")){
+		printf("Wrong input. Expecting -c\n");
+		exit(1);
 	}
 
-	//get the input;
-	if(argv[2]){
-		colname = argv[2];
-	}else{
-		printf("Wrong input.");
-		exit(0);
-	}
-	if(strcmp(argv[1], "-d") && argv[4]){
-		dirname = argv[4];
-	}
-	if(strcmp(argv[1], "-o") && argv[6]){
-		odirname = argv[6];
-	}
-
+    if(argc - 1 == 2){ //-c xxxx
+    
+        colname = argv[2];
+        dirname = currDir;
+        odirname = NULL;
+    
+    }
+    else if(argc - 1 == 4){//-c xxxx -o xxxx || -c xxxx -d xxxx
+        
+        if(!strcmp(argv[3], "-d")){// -c xxxx -d xxxx
+            colname = argv[2];
+            dirname = argv[4];
+            odirname = NULL;
+        }
+        else if(!strcmp(argv[3], "-o")){// -c xxxx -o xxxx
+            colname = argv[2];
+            dirname = currDir;
+            odirname = argv[4];
+        }
+        else{
+            printf("wrong input! Expecting -d or -o");
+            exit(1);
+        }
+        
+    }
+    else if(argc - 1 == 6){// -c xxxx -d xxxx -o xxxx
+        
+        if(!strcmp(argv[3], "-d") && !strcmp(argv[5], "-o")){
+            colname = argv[2];
+            dirname = argv[4];
+            odirname = argv[6];
+        }
+        else{
+            printf("wrong input! Expcting -c xxx -d xxx -o xxx");
+            exit(1);
+        }
+        
+    }else{
+        printf("invalid number of arguments!");
+        exit(1);
+    }
+    
+    //printf(" colname is : %s\n dirname is : %s\n odirname is : %s\n", colname, dirname, odirname);
 	printf("Initial PID: %d\nPIDS of all child processes: \n", getpid());
 	
 	directory(dirname, colname, odirname);
