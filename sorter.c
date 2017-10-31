@@ -124,7 +124,7 @@ int tok_file(FILE *fp, row* data, int num_col){
 	}
 	return curr_row;
 }
-void sort(char* filename, char* colname, char* odirname, char* tmppath, char* currPath){
+void sort(char* filename, char* colname, char* odirname, char* tmppath, char* currPath, char** colarr, int num){
 		/*declare variable*/
 		FILE *fp;
 		fp = fopen(tmppath,"r");
@@ -163,8 +163,8 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath, char* cu
 			first_row.row_token[num_col - 1][length - 2] = '\0';
 		}
 		
-        printf("the last column is : %s", first_row.row_token[num_col - 1]);
-        fflush(stdout);
+        //printf("the last column is : %s", first_row.row_token[num_col - 1]);
+        //fflush(stdout);
         
 		//trim blank space;
 		i = 0;
@@ -177,30 +177,51 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath, char* cu
 		data = (row*) malloc (sizeof(row) * 10000);
 		num_row = tok_file(fp, data, num_col);
 
-		target = colname;
 		
 		//find the target column number;
-		target_col = 0;
-		
-		while(target_col < first_row.num_col){
-			if(strcmp(first_row.row_token[target_col], target) == 0){
-				break;
+		i = num - 1;
+		while(i >= 0){
+			target = colarr[i];
+			target_col = 0;
+			
+			fflush(stdout);
+			while(target_col < first_row.num_col){
+				if(strcmp(first_row.row_token[target_col], target) == 0){
+					break;
+				}
+				target_col++;
 			}
-			target_col++;
+			
+			//no such title in the first row
+			if(target_col == (first_row.num_col)){
+				printf("Wrong input, no such title.\n");
+				fflush(stdout); 
+				exit(1);
+			}
+			//printf("---target: %d\n", target_col);
+			mergeSort(data, target_col, num_row);
+			i--;
 		}
-	
-		//no such title in the first row
-		if(target_col == (first_row.num_col)){
-            printf("Wrong input, no such title.\n");
-			exit(1);
+		//paste the colname;
+		i = 1;
+		char* comma = ",";
+		char* temp = malloc(20);
+		while(i < num - 1){		
+			printf("------colname: %s\n", colname);
+			temp = strcpy(temp, colarr[i]);
+			strcat(colname, comma);
+			strcat(colname, temp);
+			printf("------!colname: %s\n", colname);	
+			memset(&temp[0], 0, 20);
+			//temp = 0;
+			i++;
 		}
-	
-		mergeSort(data, target_col, num_row);
+		temp = strcpy(temp, colarr[i]);
+		strcat(colname, temp);		
 
 		/*cut .csv from original file name*/
 		char* ptr_end = filename + (strlen(filename) - 4);
 		*ptr_end = 0;
-
 
 		char* output_filename = (char*) malloc(strlen(filename) + strlen(colname) + 13);
 		char* output_path;
@@ -221,7 +242,8 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath, char* cu
         
 		FILE* outfptr = fopen(output_path, "w");
 		if(outfptr == NULL){
-			printf("wrong");
+			printf("Wrong Input.");
+			fflush(stdout); 
 			exit(1);		
 		}
 
@@ -328,7 +350,8 @@ void count_process(char* path, char* colname){ //new
     struct dirent *dir_ptr;
     
     if(dir == NULL){
-        printf("Wrong Path\n");
+		printf("Wrong Path\n");
+		fflush(stdout); 
         exit(1);
     }
     
@@ -366,7 +389,7 @@ void count_process(char* path, char* colname){ //new
     }
 }
 
-void directory(char* path, char* colname, char* odirname){
+void directory(char* path, char* colname, char* odirname, char** colarr, int num_col){
     DIR *dir_p;
     struct dirent *dir_ptr;
     dir_p = opendir(path);
@@ -374,7 +397,8 @@ void directory(char* path, char* colname, char* odirname){
     pid_t pid;
 
     if(dir_p == NULL){
-        printf("Wrong Path\n");
+		printf("Wrong Path\n");
+		fflush(stdout); 
         exit(1);
     }
     
@@ -396,11 +420,11 @@ void directory(char* path, char* colname, char* odirname){
             pid = fork();
             
             if(pid == 0){
-                directory(temppath, colname, odirname);
+                directory(temppath, colname, odirname, colarr, num_col);
                 exit(1);
             }else if(pid > 0){
-                
-                printf("%d\n", pid);
+				printf("%d, ", pid);
+				fflush(stdout); 
             }
         }
         else{ // file
@@ -416,10 +440,11 @@ void directory(char* path, char* colname, char* odirname){
                 if(checkcsv(temppath, colname)){
 					pid = fork();
 					if(pid > 0){
-						printf("%d\n",pid);     
+						printf("%d, ",pid); 
+						fflush(stdout);     
 					}
 					else if(pid == 0){
-						sort(name, colname, odirname, temppath, path);
+						sort(name, colname, odirname, temppath, path, colarr, num_col);
 						exit(0);
 					}
 				}   	
@@ -447,9 +472,10 @@ int main (int argc, char* argv[]){
 		exit(1);
 	}
 
+	colname = (char*)malloc(100);
     if(argc - 1 == 2){ //-c xxxx
     
-        colname = argv[2];
+        colname = strcpy(colname, argv[2]);
         dirname = currDir;
         odirname = NULL;
     
@@ -457,12 +483,12 @@ int main (int argc, char* argv[]){
     else if(argc - 1 == 4){//-c xxxx -o xxxx || -c xxxx -d xxxx
         
         if(!strcmp(argv[3], "-d")){// -c xxxx -d xxxx
-            colname = argv[2];
+            colname = strcpy(colname, argv[2]);
             dirname = argv[4];
             odirname = NULL;
         }
         else if(!strcmp(argv[3], "-o")){// -c xxxx -o xxxx
-            colname = argv[2];
+            colname = strcpy(colname, argv[2]);
             dirname = currDir;
             odirname = argv[4];
         }
@@ -475,7 +501,7 @@ int main (int argc, char* argv[]){
     else if(argc - 1 == 6){// -c xxxx -d xxxx -o xxxx
         
         if(!strcmp(argv[3], "-d") && !strcmp(argv[5], "-o")){
-            colname = argv[2];
+            colname = strcpy(colname, argv[2]);
             dirname = argv[4];
             odirname = argv[6];
         }
@@ -487,14 +513,34 @@ int main (int argc, char* argv[]){
     }else{
         printf("invalid number of arguments!");
         exit(1);
-    }
-    
-    //printf(" colname is : %s\n dirname is : %s\n odirname is : %s\n", colname, dirname, odirname);
-	printf("Initial PID: %d\nPIDS of all child processes: \n", getpid());
+	}
 	
+	//extra credit 1, if the colname are multiple;
+	//create an array of string to store the input;
+	char** colarr = (char**)malloc(28 * sizeof(char*));
+	int i = 0;
+	for(i = 0; i < 28; i++){
+		colarr[i] = (char*)malloc(20);
+	}
+
+	char* token = malloc(20);
+
+	token = strtok(colname, ",");
+	colarr[0] = token;
+
+	int num_col = 1;
+	while(token = strtok(NULL, ",")){
+		colarr[num_col++] = token;	
+	}
+	if(num_col > 1){
+		colname = colarr[0];
+	}
+   // printf(" colname is : %s\n dirname is : %s\n odirname is : %s\n", colname, dirname, odirname);
+   	printf("Initial PID: %d\n", getpid());
+   	printf("PIDS of all child processes: ");
+   	fflush(stdout);
     count_process(dirname, colname);//new
-    
-	directory(dirname, colname, odirname);
-	printf("Total Number of processes: %d\n", count_pc);
+	directory(dirname, colname, odirname, colarr, num_col);
+	printf("\nTotal Number of processes: %d\n", count_pc);
 	return 0;
 }
