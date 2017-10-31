@@ -4,6 +4,7 @@
 #define BUF_SIZE 1025
 #define TRUE 1
 #define FALSE 0
+#define MAX_DIR 4097
 
 #include <ctype.h>
 #include <sys/types.h>

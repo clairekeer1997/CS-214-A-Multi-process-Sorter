@@ -1,5 +1,6 @@
 #include "Sorter.h"
 
+int count_pc = 0;
 
 char* path_contact(const char* str1,const char* str2){ 
     char* result;  
@@ -172,7 +173,8 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath, char* cu
 		//deal with rest rows;
 		data = (row*) malloc (sizeof(row) * 10000);
 		num_row = tok_file(fp, data, num_col);
-		
+
+
 		target = colname;
 		
 		//find the target column number;
@@ -286,6 +288,7 @@ int checkcsv(char* path, char* colname){
 	char* token = malloc(50);
 	char** row_token = (char**) malloc(sizeof(char *) * (strlen(text)));
 	
+
 	token = strtok(text, ",");
 	row_token[0] = token;
 
@@ -293,6 +296,12 @@ int checkcsv(char* path, char* colname){
 	while(token = strtok(NULL, ",")){
 		row_token[num_col++] = token;	
 	}
+
+    int length = strlen(row_token[num_col - 1]);
+
+	if(row_token[num_col - 1][length - 1] == '\n'){
+		row_token[num_col - 1][length - 2] = '\0';
+    }
 
 	//find the target column;
 	int target_col = 0;
@@ -310,6 +319,50 @@ int checkcsv(char* path, char* colname){
 	return 1; 
 	
 }
+
+void count_process(char* path, char* colname){ //new
+    DIR *dir;
+    dir = opendir(path);
+    struct dirent *dir_ptr;
+    
+    if(dir == NULL){
+        printf("Wrong Path\n");
+        exit(1);
+    }
+    
+    while (dir_ptr = readdir(dir)){
+        char* temppath;
+        temppath = path_contact(path, dir_ptr->d_name);
+        struct stat st;
+        stat(temppath, &st);
+        
+        /*skip forward and back folder*/
+        if(strcmp(dir_ptr->d_name, ".") == 0 ||
+           strcmp(dir_ptr->d_name, "..") == 0){
+            continue;
+        }
+        
+        if(isDirectory(temppath)){
+            count_pc++;
+            count_process(temppath, colname);
+        }else if(dir_ptr->d_type == DT_REG){
+            
+             char *name = dir_ptr->d_name;
+            int length = strlen(name);
+            
+            /* .csv file*/
+            if(name[length - 3] == 'c' &&
+               name[length - 2] == 's' &&
+               name[length - 1] == 'v'){
+                
+                if(checkcsv(temppath, colname)){
+                    count_pc++;   
+                }
+            }
+        }
+    }
+}
+
 void directory(char* path, char* colname, char* odirname){
     DIR *dir_p;
     struct dirent *dir_ptr;
@@ -322,6 +375,7 @@ void directory(char* path, char* colname, char* odirname){
         exit(1);
     }
     
+    
     // loop each file and folder in current directory
     while(dir_ptr = readdir(dir_p)){
         char* temppath;
@@ -330,8 +384,8 @@ void directory(char* path, char* colname, char* odirname){
         stat(temppath, &st);
         
         /*skip forward and back folder*/
-        if(strcmp(dir_ptr->d_name, ".") == 0 ||
-           strcmp(dir_ptr->d_name, "..") == 0){
+        if(!strcmp(dir_ptr->d_name, ".")  ||
+           !strcmp(dir_ptr->d_name, "..")){//change
             continue;
         }
         
@@ -342,6 +396,7 @@ void directory(char* path, char* colname, char* odirname){
                 directory(temppath, colname, odirname);
                 exit(1);
             }else if(pid > 0){
+                
                 printf("%d\n", pid);
             }
         }
@@ -433,7 +488,9 @@ int main (int argc, char* argv[]){
     //printf(" colname is : %s\n dirname is : %s\n odirname is : %s\n", colname, dirname, odirname);
 	printf("Initial PID: %d\nPIDS of all child processes: \n", getpid());
 	
+    count_process(dirname, colname);//new
+    
 	directory(dirname, colname, odirname);
-	printf("Total Number of processes: \n");
+	printf("Total Number of processes: %d\n", count_pc);
 	return 0;
 }
