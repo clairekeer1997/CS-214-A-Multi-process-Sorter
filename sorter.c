@@ -159,8 +159,10 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath, char* cu
 		//delete the '\n' in the last word;
 		
 		length = strlen(first_row.row_token[num_col - 1]);
-		if(first_row.row_token[num_col - 1][length - 1] == '\n'){
-			first_row.row_token[num_col - 1][length - 2] = '\0';
+		i = 1;
+		while(first_row.row_token[num_col - 1][length - i] <= 13 && first_row.row_token[num_col - 1][length - i] >= 7){
+			first_row.row_token[num_col - 1][length - i] = '\0';
+			i++;
 		}
 		
         //printf("the last column is : %s", first_row.row_token[num_col - 1]);
@@ -364,7 +366,7 @@ void count_process(char* path, char* colname){ //new
         /*skip forward and back folder*/
         if(strcmp(dir_ptr->d_name, ".") == 0 ||
 		   strcmp(dir_ptr->d_name, "..") == 0 ||
-		   dir_prt->d_name[0] == '.'){
+		   dir_ptr->d_name[0] == '.'){
             continue;
         }
         
@@ -414,7 +416,8 @@ void directory(char* path, char* colname, char* odirname, char** colarr, int num
         /*skip forward and back folder*/
         if(!strcmp(dir_ptr->d_name, ".")  ||
 		   !strcmp(dir_ptr->d_name, "..") ||
-			dir_prt->d_name[0] == '.'){//change
+			dir_ptr->d_name[0] == '.'){//change
+				fflush(stdout);
             continue;
         }
         
