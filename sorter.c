@@ -320,7 +320,8 @@ int checkcsv(char* path, char* colname){
 	
 }
 
-void count_process(char* path, char* colname){
+void count_process(c
+	har* path, char* colname){
     DIR *dir;
     dir = opendir(path);
     struct dirent *dir_ptr;
