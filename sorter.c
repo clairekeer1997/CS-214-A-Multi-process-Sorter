@@ -320,7 +320,7 @@ int checkcsv(char* path, char* colname){
 	
 }
 
-void count_process(char* path, char* colname){ //new
+void count_process(char* path, char* colname){
     DIR *dir;
     dir = opendir(path);
     struct dirent *dir_ptr;
@@ -488,7 +488,7 @@ int main (int argc, char* argv[]){
     //printf(" colname is : %s\n dirname is : %s\n odirname is : %s\n", colname, dirname, odirname);
 	printf("Initial PID: %d\nPIDS of all child processes: \n", getpid());
 	
-    count_process(dirname, colname);//new
+    count_process(dirname, colname);
     
 	directory(dirname, colname, odirname);
 	printf("Total Number of processes: %d\n", count_pc);
