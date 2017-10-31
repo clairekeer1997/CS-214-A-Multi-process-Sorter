@@ -163,6 +163,9 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath, char* cu
 			first_row.row_token[num_col - 1][length - 2] = '\0';
 		}
 		
+        printf("the last column is : %s", first_row.row_token[num_col - 1]);
+        fflush(stdout);
+        
 		//trim blank space;
 		i = 0;
 		while(i < num_col){
@@ -173,7 +176,6 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath, char* cu
 		//deal with rest rows;
 		data = (row*) malloc (sizeof(row) * 10000);
 		num_row = tok_file(fp, data, num_col);
-
 
 		target = colname;
 		
@@ -320,8 +322,7 @@ int checkcsv(char* path, char* colname){
 	
 }
 
-void count_process(c
-	har* path, char* colname){
+void count_process(char* path, char* colname){ //new
     DIR *dir;
     dir = opendir(path);
     struct dirent *dir_ptr;
@@ -354,7 +355,8 @@ void count_process(c
             /* .csv file*/
             if(name[length - 3] == 'c' &&
                name[length - 2] == 's' &&
-               name[length - 1] == 'v'){
+               name[length - 1] == 'v' &&
+               !strstr(name, "-sorted-")){
                 
                 if(checkcsv(temppath, colname)){
                     count_pc++;   
@@ -408,7 +410,8 @@ void directory(char* path, char* colname, char* odirname){
             /* .csv file*/
             if(name[length - 3] == 'c' &&
                name[length - 2] == 's' &&
-               name[length - 1] == 'v'){
+               name[length - 1] == 'v' &&
+               !strstr(name, "-sorted-")){
 			
                 if(checkcsv(temppath, colname)){
 					pid = fork();
@@ -489,7 +492,7 @@ int main (int argc, char* argv[]){
     //printf(" colname is : %s\n dirname is : %s\n odirname is : %s\n", colname, dirname, odirname);
 	printf("Initial PID: %d\nPIDS of all child processes: \n", getpid());
 	
-    count_process(dirname, colname);
+    count_process(dirname, colname);//new
     
 	directory(dirname, colname, odirname);
 	printf("Total Number of processes: %d\n", count_pc);
