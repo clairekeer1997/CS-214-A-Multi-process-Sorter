@@ -363,7 +363,8 @@ void count_process(char* path, char* colname){ //new
         
         /*skip forward and back folder*/
         if(strcmp(dir_ptr->d_name, ".") == 0 ||
-           strcmp(dir_ptr->d_name, "..") == 0){
+		   strcmp(dir_ptr->d_name, "..") == 0 ||
+		   dir_prt->d_name[0] == '.'){
             continue;
         }
         
@@ -412,7 +413,8 @@ void directory(char* path, char* colname, char* odirname, char** colarr, int num
         
         /*skip forward and back folder*/
         if(!strcmp(dir_ptr->d_name, ".")  ||
-           !strcmp(dir_ptr->d_name, "..")){//change
+		   !strcmp(dir_ptr->d_name, "..") ||
+			dir_prt->d_name[0] == '.'){//change
             continue;
         }
         
