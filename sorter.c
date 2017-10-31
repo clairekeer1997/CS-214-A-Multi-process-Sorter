@@ -200,7 +200,6 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath, char* cu
 				fflush(stdout); 
 				exit(1);
 			}
-			//printf("---target: %d\n", target_col);
 			mergeSort(data, target_col, num_row);
 			i--;
 		}
@@ -208,19 +207,16 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath, char* cu
 		i = 1;
 		char* comma = ",";
 		char* temp = malloc(20);
-		while(i < num - 1){		
-			printf("------colname: %s\n", colname);
+		
+		while(i < num){		
 			temp = strcpy(temp, colarr[i]);
 			strcat(colname, comma);
-			strcat(colname, temp);
-			printf("------!colname: %s\n", colname);	
+			strcat(colname, temp);	
 			memset(&temp[0], 0, 20);
-			//temp = 0;
 			i++;
 		}
-		temp = strcpy(temp, colarr[i]);
-		strcat(colname, temp);		
 
+		
 		/*cut .csv from original file name*/
 		char* ptr_end = filename + (strlen(filename) - 4);
 		*ptr_end = 0;
