@@ -2,6 +2,7 @@
 #define SORTER_H
 
 #define BUF_SIZE 1025
+#define MAX_LINE 10000
 #define TRUE 1
 #define FALSE 0
 #define MAX_DIR 4097

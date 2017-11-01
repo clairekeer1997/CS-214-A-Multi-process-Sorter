@@ -176,7 +176,7 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath, char* cu
 		}
 		
 		//deal with rest rows;
-		data = (row*) malloc (sizeof(row) * 10000);
+		data = (row*) malloc (sizeof(row) * MAX_LINE);
 		num_row = tok_file(fp, data, num_col);
 
 		
@@ -319,10 +319,10 @@ int checkcsv(char* path, char* colname){
 	}
 
     int length = strlen(first_row.row_token[num_col - 1]);
-	i = 1;
+	int i = 1;
 
-	while(first_row.row_token[num_col - 1][length - i] <= 13 && first_row.row_token[num_col - 1][length - i] >= 7){
-		first_row.row_token[num_col - 1][length - i] = '\0';
+	while(row_token[num_col - 1][length - i] <= 13 && row_token[num_col - 1][length - i] >= 7){
+		row_token[num_col - 1][length - i] = '\0';
 		i++;
 	}
 
