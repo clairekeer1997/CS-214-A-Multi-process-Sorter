@@ -28,6 +28,15 @@ typedef struct{
 int compare(char* c1, char* c2);
 void merge(row* L, row* R, row* res, int left, int right, int col);
 void mergeSort(row* target, int col, int n);
-
+//sorter.c
+char* path_contact(const char* str1,const char* str2);
+char *trim(char *word, int index);
+char** tokenizer(char* line, size_t num_col);
+int tok_file(FILE *fp, row* data, int num_col);
+void sort(char* filename, char* colname, char* odirname, char* tmppath, char* currPath, char** colarr, int num);
+int isDirectory(char *path);
+int checkcsv(char* path, char* colname);
+void count_process(char* path, char* colname);
+void directory(char* path, char* colname, char* odirname, char** colarr, int num_col);
 
 #endif

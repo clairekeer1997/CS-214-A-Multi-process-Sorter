@@ -318,7 +318,7 @@ int checkcsv(char* path, char* colname){
 		row_token[num_col++] = token;	
 	}
 
-    int length = strlen(first_row.row_token[num_col - 1]);
+    int length = strlen(row_token[num_col - 1]);
 	int i = 1;
 
 	while(row_token[num_col - 1][length - i] <= 13 && row_token[num_col - 1][length - i] >= 7){
