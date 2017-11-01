@@ -186,7 +186,6 @@ void sort(char* filename, char* colname, char* odirname, char* tmppath, char* cu
 			target = colarr[i];
 			target_col = 0;
 			
-			fflush(stdout);
 			while(target_col < first_row.num_col){
 				if(strcmp(first_row.row_token[target_col], target) == 0){
 					break;
@@ -319,11 +318,13 @@ int checkcsv(char* path, char* colname){
 		row_token[num_col++] = token;	
 	}
 
-    int length = strlen(row_token[num_col - 1]);
-
-	if(row_token[num_col - 1][length - 1] == '\n'){
-		row_token[num_col - 1][length - 2] = '\0';
-    }
+    int length = strlen(first_row.row_token[num_col - 1]);
+	i = 1;
+	
+	while(first_row.row_token[num_col - 1][length - i] <= 13 && first_row.row_token[num_col - 1][length - i] >= 7){
+		first_row.row_token[num_col - 1][length - i] = '\0';
+		i++;
+	}
 
 	//find the target column;
 	int target_col = 0;
