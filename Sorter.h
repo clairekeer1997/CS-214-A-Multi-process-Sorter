@@ -25,9 +25,12 @@ typedef struct{
     int comma;//true if there is no comma, false if there is a comma in the row
 }row;
 
+//mergesort.c
+
 int compare(char* c1, char* c2);
 void merge(row* L, row* R, row* res, int left, int right, int col);
 void mergeSort(row* target, int col, int n);
+
 //sorter.c
 char* path_contact(const char* str1,const char* str2);
 char *trim(char *word, int index);
