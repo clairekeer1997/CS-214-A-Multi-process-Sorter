@@ -320,7 +320,7 @@ int checkcsv(char* path, char* colname){
 
     int length = strlen(first_row.row_token[num_col - 1]);
 	i = 1;
-	
+
 	while(first_row.row_token[num_col - 1][length - i] <= 13 && first_row.row_token[num_col - 1][length - i] >= 7){
 		first_row.row_token[num_col - 1][length - i] = '\0';
 		i++;
@@ -414,8 +414,7 @@ void directory(char* path, char* colname, char* odirname, char** colarr, int num
         if(!strcmp(dir_ptr->d_name, ".")  ||
 		   !strcmp(dir_ptr->d_name, "..") ||
 			dir_ptr->d_name[0] == '.'){//change
-				fflush(stdout);
-            continue;
+	            continue;
         }
         
         if(isDirectory(temppath)){ // sub-folder
