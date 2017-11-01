@@ -1,6 +1,6 @@
 #include "Sorter.h"
 
-int count_pc = 0;
+int count_pc = 1;
 
 char* path_contact(const char* str1,const char* str2){ 
     char* result;  
